@@ -1,0 +1,50 @@
+name: Build MSIX
+
+# Compila únicamente el paquete MSIX (.appx) del receptor para subirlo a la
+# Microsoft Store. No publica ningún release: solo deja el paquete como
+# artefacto descargable.
+#
+# Uso: pestaña Actions → "Build MSIX" → Run workflow.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build-msix:
+    name: Compilar MSIX (x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar paquete MSIX
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --config builder/viewer.yml --win appx --x64 --publish never
+
+      - name: Listar paquetes generados
+        shell: pwsh
+        run: Get-ChildItem -Recurse dist/viewer -Filter *.appx | Select-Object FullName, Length
+
+      - name: Subir paquete MSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: GDW-Mirror-View-msix
+          path: dist/viewer/*.appx
+          if-no-files-found: error
+          retention-days: 14

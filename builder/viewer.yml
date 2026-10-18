@@ -20,6 +20,20 @@ win:
   target:
     - portable
     - zip
+    - appx
+
+appx:
+  applicationId: GDWMirrorView
+  identityName: JosCruzChvez.GDWMirrorView
+  publisher: CN=0711A566-87BA-4116-8D0A-B2E7DB8586BF
+  publisherDisplayName: José Cruz Chávez
+  displayName: GDW Mirror View
+  backgroundColor: "#08080a"
+  capabilities:
+    - runFullTrust
+    - privateNetworkClientServer
+  minVersion: 10.0.17763.0
+  addAutoLaunchExtension: false
 
 mac:
   category: public.app-category.utilities
