@@ -92,10 +92,10 @@ jobs:
 
       - name: Verificar firma (ambas)
         run: |
-          for APP in $(find dist/host -maxdepth 2 -name '*.app' -type d); do
+          find dist/host -maxdepth 2 -name '*.app' -type d -print0 | while IFS= read -r -d '' APP; do
             echo "App: $APP"
             codesign --verify --deep --strict "$APP"
-            codesign -dv --verbose=2 "$APP" 2>&1 | grep -E 'Signature|Authority'
+            codesign -dv --verbose=2 "$APP" 2>&1 | grep -E 'Signature|Authority' || true
           done
 
       - name: Subir artefacto
