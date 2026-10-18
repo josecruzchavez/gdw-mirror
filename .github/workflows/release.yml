@@ -58,20 +58,38 @@ jobs:
 
       - name: Compilar host (arm64)
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config builder/host.yml --mac zip --publish never
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          IDENTITY_FLAG=()
+          if [ -n "$CSC_LINK" ]; then
+            IDENTITY_FLAG=(--config.mac.identity="")
+          fi
+          npx electron-builder --config builder/host.yml --mac zip --publish never "${IDENTITY_FLAG[@]}"
 
       - name: Compilar host (x64 Intel)
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config builder/host.yml --mac zip --x64 --publish never
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          IDENTITY_FLAG=()
+          if [ -n "$CSC_LINK" ]; then
+            IDENTITY_FLAG=(--config.mac.identity="")
+          fi
+          npx electron-builder --config builder/host.yml --mac zip --x64 --publish never "${IDENTITY_FLAG[@]}"
 
-      - name: Verificar firma ad-hoc (ambas)
+      - name: Verificar firma (ambas)
         run: |
           for APP in $(find dist/host -maxdepth 2 -name '*.app' -type d); do
             echo "App: $APP"
             codesign --verify --deep --strict "$APP"
-            codesign -dv --verbose=2 "$APP" 2>&1 | grep -E 'Signature|Sealed'
+            codesign -dv --verbose=2 "$APP" 2>&1 | grep -E 'Signature|Authority'
           done
 
       - name: Subir artefacto
