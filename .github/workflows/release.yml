@@ -64,11 +64,14 @@ jobs:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
-          IDENTITY_FLAG=()
           if [ -n "$CSC_LINK" ]; then
-            IDENTITY_FLAG=(--config.mac.identity="")
+            echo "Firma: Developer ID (certificado presente)"
+            npx electron-builder --config builder/host.yml --mac zip --publish never --config.mac.identity=""
+          else
+            echo "Firma: ad-hoc (sin certificado)"
+            unset CSC_LINK CSC_KEY_PASSWORD APPLE_API_KEY APPLE_API_KEY_ID APPLE_API_ISSUER
+            CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --config builder/host.yml --mac zip --publish never
           fi
-          npx electron-builder --config builder/host.yml --mac zip --publish never "${IDENTITY_FLAG[@]}"
 
       - name: Compilar host (x64 Intel)
         env:
@@ -78,11 +81,14 @@ jobs:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
-          IDENTITY_FLAG=()
           if [ -n "$CSC_LINK" ]; then
-            IDENTITY_FLAG=(--config.mac.identity="")
+            echo "Firma: Developer ID (certificado presente)"
+            npx electron-builder --config builder/host.yml --mac zip --x64 --publish never --config.mac.identity=""
+          else
+            echo "Firma: ad-hoc (sin certificado)"
+            unset CSC_LINK CSC_KEY_PASSWORD APPLE_API_KEY APPLE_API_KEY_ID APPLE_API_ISSUER
+            CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --config builder/host.yml --mac zip --x64 --publish never
           fi
-          npx electron-builder --config builder/host.yml --mac zip --x64 --publish never "${IDENTITY_FLAG[@]}"
 
       - name: Verificar firma (ambas)
         run: |
