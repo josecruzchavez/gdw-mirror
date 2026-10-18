@@ -11,6 +11,8 @@ Sin control remoto, sin gamepads, sin drivers, sin servicios instalados, sin nub
 - **GDW Mirror Host** (macOS): vive en la barra de estado, captura y codifica.
 - **GDW Mirror View** (Windows): ventana única que recibe y muestra. `.exe` portable.
 
+> **This document is also available in English:** [README.en.md](README.en.md)
+
 ---
 
 ## Índice
