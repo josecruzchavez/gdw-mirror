@@ -1,14 +1,24 @@
-# GDW Mirror 0.2.0
+# GDW Mirror 0.2.1
 
-Primera versión publicada. Comparte la pantalla de tu Mac en llamadas y conferencias desde una PC con
-Windows, a resolución nativa y por red local.
+Comparte la pantalla de tu Mac en llamadas y conferencias desde una PC con Windows, a resolución nativa y
+por red local.
+
+## Novedades en 0.2.1
+
+- **Arreglo del permiso de grabación de pantalla**: al pulsar "Compartir pantalla", la app dispara el prompt
+  nativo y aparece en *Ajustes → Privacidad y seguridad → Grabación de pantalla*, sin tener que agregarla
+  manualmente.
+- **Binario x64 para Mac Intel**, además del arm64 para Apple Silicon.
+- **Nuevo icono**: diseño de dos monitores, unificado con el sitio web.
+- **Texto del enlace de donación unificado** ("Invítame un café").
 
 ## Descargas
 
 | Archivo | Plataforma | Tamaño |
 | --- | --- | --- |
-| `GDW-Mirror-Host-0.2.0-arm64.zip` | macOS (Apple Silicon) | ~121 MB |
-| `GDW-Mirror-View-0.2.0-x64-portable.exe` | Windows 10/11 x64 | ~95 MB |
+| `GDW-Mirror-Host-0.2.1-arm64.zip` | macOS (Apple Silicon) | ~121 MB |
+| `GDW-Mirror-Host-0.2.1-x64.zip` | macOS (Intel) | ~128 MB |
+| `GDW-Mirror-View-0.2.1-x64-portable.exe` | Windows 10/11 x64 | ~95 MB |
 
 ---
 
@@ -49,7 +59,7 @@ xattr -dr com.apple.quarantine "/Applications/GDW Mirror Host.app"
 Descarga con `gh` o `curl` (no pasan por el navegador y no añaden cuarentena):
 
 ```bash
-gh release download v0.2.0 --repo josecruzchavez/gdw-mirror
+gh release download v0.2.1 --repo josecruzchavez/gdw-mirror
 ```
 
 O compila desde el código: los binarios locales no llevan cuarentena.
@@ -128,7 +138,7 @@ pantalla de una Mac desde Windows en Meet o Zoom, sin instalar servicios ni driv
 
 - [josecruzchavez.com](https://josecruzchavez.com)
 - [gdw.mx](https://gdw.mx)
-- [Invitar un café](https://www.paypal.com/paypalme/gestiondigitalweb)
+- [Invítame un café](https://www.paypal.com/paypalme/gestiondigitalweb)
 
 ## Verificación de integridad
 

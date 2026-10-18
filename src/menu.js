@@ -232,7 +232,7 @@ function render(s) {
       const links = [
         { label: 'josecruzchavez.com', url: 'https://josecruzchavez.com' },
         { label: 'gdw.mx · desarrollos', url: 'https://gdw.mx' },
-        { label: 'Invitar un café · PayPal', url: 'https://www.paypal.com/paypalme/gestiondigitalweb' },
+        { label: 'Invítame un café', url: 'https://www.paypal.com/paypalme/gestiondigitalweb' },
       ];
       links.forEach((l) => {
         const b = document.createElement('button');
