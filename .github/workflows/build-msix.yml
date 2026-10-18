@@ -21,10 +21,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -42,7 +42,7 @@ jobs:
         run: Get-ChildItem -Recurse dist/viewer -Filter *.appx | Select-Object FullName, Length
 
       - name: Subir paquete MSIX
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: GDW-Mirror-View-msix
           path: dist/viewer/*.appx
