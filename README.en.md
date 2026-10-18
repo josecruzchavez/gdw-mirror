@@ -158,7 +158,7 @@ If you want to game, use Sunshine. If you want to present, use this.
 | Windows | 10 x64 | Windows 11 x64 |
 | Network | Same LAN | Ethernet and WiFi 6 |
 
-- **Apple Silicon**: current binaries are `arm64`. For Intel Macs you must rebuild with `--mac --x64`.
+- **Apple Silicon and Intel**: `arm64` (Apple Silicon) and `x64` (Intel) binaries are published.
 - **Windows**: x64 only. No ARM64 build.
 - Both machines must see each other on the local network (no client isolation).
 
@@ -170,7 +170,8 @@ Go to [**Releases**](../../releases) and download both files:
 
 | File | For |
 | --- | --- |
-| `GDW-Mirror-Host-<version>-arm64.zip` | Mac |
+| `GDW-Mirror-Host-<version>-arm64.zip` | Mac (Apple Silicon) |
+| `GDW-Mirror-Host-<version>-x64.zip` | Mac (Intel) |
 | `GDW-Mirror-View-<version>-x64-portable.exe` | Windows |
 
 > **About the security warnings.** The app is not signed with an Apple Developer ID nor a Windows code
@@ -180,7 +181,8 @@ Go to [**Releases**](../../releases) and download both files:
 
 #### macOS
 
-1. Unzip `GDW-Mirror-Host-<version>-arm64.zip`. You get **GDW Mirror Host.app**.
+1. Unzip the `.zip` matching your Mac (`arm64` for Apple Silicon, `x64` for Intel). You get
+   **GDW Mirror Host.app**.
 2. Drag the app to **Applications** (recommended, not required).
 3. The first time, **do not double-click**. **Right-click the app → Open**, and confirm *Open*.
 
@@ -223,7 +225,7 @@ are built with the commands under [Building](#building).
 
 ### Option C: build from source
 
-See [Building](#building). This is the only route for Intel Macs.
+See [Building](#building).
 
 ## Usage
 
@@ -480,11 +482,10 @@ npm run dist:win
 Outputs:
 
 - `dist/host/GDW-Mirror-Host-<version>-arm64.zip`
+- `dist/host/GDW-Mirror-Host-<version>-x64.zip` (Intel)
 - `dist/viewer/GDW-Mirror-View-<version>-x64-portable.exe`
 
 ### Building for Intel Macs
-
-The default binary is `arm64`. For Intel:
 
 ```bash
 npx electron-builder --config builder/host.yml --mac zip --x64
@@ -517,7 +518,7 @@ gh workflow run release.yml -f tag=v0.2.0
 | Job | Runner | Action |
 | --- | --- | --- |
 | `meta` | ubuntu | Reads the version from `package.json` and derives the tag |
-| `build-mac` | macos-14 | Builds the arm64 host, verifies `codesign --deep --strict` |
+| `build-mac` | macos-14 | Builds the `arm64` and `x64` (Intel) host, verifies `codesign --deep --strict` |
 | `build-win` | windows-latest | Builds the x64 portable receiver |
 | `publish` | ubuntu | Computes SHA-256 and creates or updates the release with `gh` |
 
@@ -615,7 +616,7 @@ build/
 - **Protected audio (DRM)** may not be captured.
 - **No automatic reconnection.** If the network drops, you have to reconnect.
 - **No window selection.** Full screen only (not a single app).
-- **Apple Silicon and Windows x64 only** in the published binaries.
+- **macOS arm64 + x64 and Windows x64** in the published binaries. No Windows ARM64.
 - **Receiving on the same Mac** drops to ~60 fps because decoding competes with encoding. On a separate
   machine it doesn't happen.
 
@@ -665,7 +666,7 @@ warnings. Only browser downloads carry it.
 - [ ] Window selection in addition to full screen.
 - [ ] Multiple simultaneous receivers.
 - [ ] Signing and notarization.
-- [ ] Intel Mac and Windows ARM64 builds.
+- [ ] Windows ARM64 build.
 - [ ] Audio gain control (attenuate what's sent).
 
 ## Author

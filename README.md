@@ -159,8 +159,7 @@ Si quieres jugar, usa Sunshine. Si quieres presentar, esto.
 | Windows | 10 x64 | Windows 11 x64 |
 | Red | Misma LAN | Ethernet y WiFi 6 |
 
-- **Apple Silicon**: los binarios actuales son `arm64`. Para Macs Intel hay que recompilar con
-  `--mac --x64`.
+- **Apple Silicon e Intel**: se publican binarios `arm64` (Apple Silicon) y `x64` (Intel).
 - **Windows**: solo x64. No hay build para ARM64.
 - Ambos equipos deben poderse ver por la red local (sin aislamiento de clientes).
 
@@ -172,7 +171,8 @@ Ve a la sección [**Releases**](../../releases) y descarga los dos archivos:
 
 | Archivo | Para |
 | --- | --- |
-| `GDW-Mirror-Host-<version>-arm64.zip` | Mac |
+| `GDW-Mirror-Host-<version>-arm64.zip` | Mac con Apple Silicon |
+| `GDW-Mirror-Host-<version>-x64.zip` | Mac con Intel |
 | `GDW-Mirror-View-<version>-x64-portable.exe` | Windows |
 
 > **Aviso sobre los avisos de seguridad.** La app no está firmada con un Developer ID de Apple ni con un
@@ -182,7 +182,8 @@ Ve a la sección [**Releases**](../../releases) y descarga los dos archivos:
 
 #### macOS
 
-1. Descomprime `GDW-Mirror-Host-<version>-arm64.zip`. Se obtiene **GDW Mirror Host.app**.
+1. Descomprime el `.zip` que corresponda a tu Mac (`arm64` para Apple Silicon, `x64` para Intel).
+   Se obtiene **GDW Mirror Host.app**.
 2. Arrastra la app a **Aplicaciones** (recomendado, no obligatorio).
 3. La primera vez **no hagas doble clic**. Haz **clic derecho sobre la app → Abrir**, y confirma
    *Abrir* en el diálogo.
@@ -226,7 +227,7 @@ con los comandos de [Compilar](#compilar).
 
 ### Opción C: compilar desde el código
 
-Ver [Compilar](#compilar). Es la única vía para Macs Intel.
+Ver [Compilar](#compilar).
 
 ## Uso
 
@@ -483,11 +484,10 @@ npm run dist:win
 Salidas:
 
 - `dist/host/GDW-Mirror-Host-<version>-arm64.zip`
+- `dist/host/GDW-Mirror-Host-<version>-x64.zip` (Intel)
 - `dist/viewer/GDW-Mirror-View-<version>-x64-portable.exe`
 
 ### Compilar para Mac Intel
-
-El binario por defecto es `arm64`. Para Intel:
 
 ```bash
 npx electron-builder --config builder/host.yml --mac zip --x64
@@ -520,7 +520,7 @@ gh workflow run release.yml -f tag=v0.2.0
 | Job | Runner | Acción |
 | --- | --- | --- |
 | `meta` | ubuntu | Lee la versión de `package.json` y deriva el tag |
-| `build-mac` | macos-14 | Compila el host arm64, verifica `codesign --deep --strict` |
+| `build-mac` | macos-14 | Compila el host `arm64` y `x64` (Intel), verifica `codesign --deep --strict` |
 | `build-win` | windows-latest | Compila el receptor x64 portable |
 | `publish` | ubuntu | Calcula SHA-256 y crea o actualiza el release con `gh` |
 
@@ -618,7 +618,7 @@ build/
 - **Audio protegido (DRM)** puede no capturarse.
 - **Sin reconexión automática.** Si se cae la red, hay que volver a conectar.
 - **Sin selección de ventana.** Solo pantalla completa (no una app suelta).
-- **Solo Apple Silicon y Windows x64** en los binarios publicados.
+- **macOS arm64 + x64 y Windows x64** en los binarios publicados. Sin Windows ARM64.
 - **La recepción en la misma Mac** baja a ~60 fps porque decodificar compite con codificar. En un equipo
   aparte no ocurre.
 
@@ -668,7 +668,7 @@ avisos. Solo los descargados por un navegador la llevan.
 - [ ] Selección de ventana además de pantalla completa.
 - [ ] Varios receptores simultáneos.
 - [ ] Firma y notarización.
-- [ ] Build para Mac Intel y Windows ARM64.
+- [ ] Build para Windows ARM64.
 - [ ] Control de ganancia de audio (atenuar lo que se envía).
 
 ## Autor

@@ -392,24 +392,36 @@ async function startSharing() {
   if (st.sharing || st.starting) return;
 
   if (process.platform === 'darwin') {
-    const status = systemPreferences.getMediaAccessStatus('screen');
+    let status = systemPreferences.getMediaAccessStatus('screen');
     if (status !== 'granted') {
-      st.error = 'Falta el permiso de grabación de pantalla.';
-      rebuildMenu();
-      dialog
-        .showMessageBox({
-          type: 'warning',
-          buttons: ['Abrir Ajustes', 'Cancelar'],
-          defaultId: 0,
-          message: 'GDW Mirror necesita permiso para grabar la pantalla',
-          detail:
-            'Actívalo en Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla y vuelve a intentarlo. Puede que tengas que reiniciar la app después de concederlo.',
-        })
-        .then((r) => {
-          if (r.response === 0)
-            shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture');
-        });
-      return;
+      // Pide el permiso con la API nativa. Esto dispara el prompt del sistema y
+      // hace que la app aparezca en Ajustes → Grabación de pantalla, en vez de
+      // obligar a agregarla a mano.
+      let asked = false;
+      try {
+        asked = await systemPreferences.askForMediaAccess('screen');
+      } catch (e) {
+        asked = false;
+      }
+      status = systemPreferences.getMediaAccessStatus('screen');
+      if (!asked && status !== 'granted') {
+        st.error = 'Falta el permiso de grabación de pantalla.';
+        rebuildMenu();
+        dialog
+          .showMessageBox({
+            type: 'warning',
+            buttons: ['Abrir Ajustes', 'Cancelar'],
+            defaultId: 0,
+            message: 'GDW Mirror necesita permiso para grabar la pantalla',
+            detail:
+              'Actívalo en Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla y vuelve a intentarlo. Puede que tengas que reiniciar la app después de concederlo.',
+          })
+          .then((r) => {
+            if (r.response === 0)
+              shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture');
+          });
+        return;
+      }
     }
   }
 
