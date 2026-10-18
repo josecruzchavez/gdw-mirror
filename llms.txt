@@ -1,0 +1,36 @@
+# GDW Mirror
+
+> Screen mirroring from macOS to Windows over the local network, at native resolution. No remote control, no drivers, no installed services, no cloud, no accounts. Share your Mac's screen in Meet, Zoom or OBS from a Windows PC. Electron app with two parts: GDW Mirror Host (macOS menu bar) and GDW Mirror View (Windows portable .exe). By José Cruz Chávez.
+
+- [README.md](README.md): Full documentation in Spanish (primary README).
+- [README.en.md](README.en.md): Full documentation in English.
+- [LICENSE](LICENSE): Proprietary, all rights reserved. Personal consultation and use only; no commercial redistribution without written permission.
+- [package.json](package.json): Project metadata, npm scripts, keywords.
+- [builder/host.yml](builder/host.yml): electron-builder config for the macOS host (zip + dmg, ad-hoc signed).
+- [builder/viewer.yml](builder/viewer.yml): electron-builder config for the Windows viewer (portable .exe + zip + MSIX for the Microsoft Store).
+
+## Source code
+
+- [src/main.js](src/main.js): Entry point that selects host vs viewer mode from `--mode`.
+- [src/host-main.js](src/host-main.js): Menu bar, panel, HTTP signaling, LAN discovery (macOS host main process).
+- [src/host.js](src/host.js): Capture engine and WebRTC (host renderer).
+- [src/menu.js](src/menu.js): Menu bar popover with collapsible blocks.
+- [src/viewer-main.js](src/viewer-main.js): Receiver window, discovery, network IPC (Windows main process).
+- [src/viewer.js](src/viewer.js): Connection UI and playback (viewer renderer).
+- [src/icons.js](src/icons.js): Menu bar and app icons generated in code (PNG).
+- [src/fit.js](src/fit.js): Window aspect-ratio fitting calculation.
+- [src/net.js](src/net.js): HTTP client and network utilities.
+
+## Key facts
+
+- Architecture: Electron, WebRTC (DTLS-SRTP transport), ScreenCaptureKit capture on macOS, H.264 encoding.
+- Transport: HTTP signaling on LAN + WebRTC P2P media. No relay servers, no telemetry.
+- Quality profiles: Sharp (30 fps, 60 Mbps), Smooth (60 fps, 80 Mbps), High (90 fps, 100 Mbps), Eco (30 fps, 12 Mbps).
+- Requirements: macOS 13 Ventura+ (Apple Silicon or Intel), Windows 10/11 x64, same LAN.
+- Security: pairing code off by default; 8 failures from one IP block for 30 seconds when enabled.
+- Distribution: GitHub Releases (binaries), Homebrew cask (`josecruzchavez/gdw` tap), winget, Microsoft Store (MSIX).
+
+## CI/CD
+
+- [.github/workflows/release.yml](.github/workflows/release.yml): Builds macOS (arm64 + x64) and Windows, computes SHA-256, publishes GitHub Release on tag push.
+- [.github/workflows/build-msix.yml](.github/workflows/build-msix.yml): Manual workflow to build only the MSIX package for the Microsoft Store.
