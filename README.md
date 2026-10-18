@@ -1,9 +1,12 @@
 # GDW Mirror
 
-**Comparte la pantalla de tu Mac en llamadas y conferencias desde una PC con Windows, a resolución nativa.**
+**Espejo de pantalla (screen mirror) de macOS a Windows por red local.** Comparte la pantalla de tu Mac en
+llamadas y conferencias desde una PC, a resolución nativa.
 
-Espejo de pantalla macOS → Windows por red local. Sin control remoto, sin gamepads, sin drivers, sin
-servicios instalados, sin nube, sin cuentas.
+> **Mirror / espejo** es la palabra clave: no es control remoto ni escritorio remoto. Es un **screen
+> mirror** — la Mac se ve en Windows, sin mover su ratón ni su teclado.
+
+Sin control remoto, sin gamepads, sin drivers, sin servicios instalados, sin nube, sin cuentas.
 
 - **GDW Mirror Host** (macOS): vive en la barra de estado, captura y codifica.
 - **GDW Mirror View** (Windows): ventana única que recibe y muestra. `.exe` portable.
@@ -12,6 +15,7 @@ servicios instalados, sin nube, sin cuentas.
 
 ## Índice
 
+- [Términos de búsqueda](#términos-de-búsqueda)
 - [Origen del proyecto](#origen-del-proyecto)
 - [Qué problema resuelve](#qué-problema-resuelve)
 - [Por qué no Sunshine / Moonlight](#por-qué-no-sunshine--moonlight)
@@ -41,6 +45,39 @@ servicios instalados, sin nube, sin cuentas.
 - [Hoja de ruta](#hoja-de-ruta)
 - [Autor](#autor)
 - [Licencia](#licencia)
+
+---
+
+## Términos de búsqueda
+
+Si llegaste aquí buscando alguna de estas cosas, este es el proyecto:
+
+**En español**
+
+`espejo de pantalla` · `espejo de pantalla mac a windows` · `compartir pantalla de mac en windows` ·
+`ver pantalla de mac en pc` · `mandar pantalla de mac a windows` · `duplicar pantalla mac en windows` ·
+`pantalla extendida mac windows` · `compartir pantalla mac en meet` · `compartir pantalla mac en zoom` ·
+`pantalla de mac en obs` · `espejo mac sin cables` · `transmitir pantalla mac a pc por red local` ·
+`alternativa a airplay para windows`
+
+**In English**
+
+`screen mirror` · `screen mirroring` · `mirror screen` · `mirror mac to windows` ·
+`mac screen to windows` · `share mac screen on windows` · `mac to windows screen sharing` ·
+`mac as second screen windows` · `display mirroring` · `screen casting lan` ·
+`share mac screen in google meet` · `share mac screen in zoom` · `mac screen capture for obs` ·
+`airplay alternative for windows` · `sunshine moonlight alternative for presentations` ·
+`low latency screen mirror lan` · `webrtc screen sharing desktop`
+
+**Técnico**
+
+`macOS a Windows` · `LAN screen mirror` · `WebRTC screen capture` · `ScreenCaptureKit mirror` ·
+`H.264 screen mirror` · `no drivers screen mirror` · `zero install screen mirror` ·
+`Electron screen mirror app`
+
+> Este proyecto **no** es: control remoto, escritorio remoto (RDP/VNC), streaming de juegos
+> (Moonlight/Parsec), ni AirPlay. Es específicamente un **espejo de pantalla de un solo sentido**,
+> Mac → Windows, para presentar.
 
 ---
 

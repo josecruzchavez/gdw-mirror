@@ -2,7 +2,38 @@
   "name": "gdw-mirror",
   "productName": "GDW Mirror Host",
   "version": "0.2.0",
-  "description": "Espejo de pantalla macOS -> Windows por LAN. Sin control remoto, sin servicios, sin drivers.",
+  "description": "Espejo de pantalla (screen mirror) macOS → Windows por LAN. Comparte la pantalla de tu Mac en Meet, Zoom u OBS desde una PC, a resolución nativa. Sin control remoto, sin servicios, sin drivers.",
+  "keywords": [
+    "screen-mirror",
+    "screen-mirroring",
+    "mirror-screen",
+    "screen-sharing",
+    "screen-cast",
+    "mac-to-windows",
+    "macos-to-windows",
+    "second-screen",
+    "display-mirroring",
+    "remote-display",
+    "extend-display",
+    "presentation",
+    "conference",
+    "meet",
+    "zoom",
+    "obs",
+    "webrtc",
+    "electron",
+    "macos",
+    "windows",
+    "lan",
+    "low-latency",
+    "no-drivers",
+    "airplay-alternative",
+    "sunshine-alternative",
+    "espejo",
+    "espejo-de-pantalla",
+    "compartir-pantalla",
+    "mac-a-windows"
+  ],
   "main": "src/main.js",
   "private": true,
   "scripts": {
@@ -17,10 +48,6 @@
   },
   "author": "José Cruz Chávez <https://josecruzchavez.com>",
   "license": "SEE LICENSE IN LICENSE",
-  "devDependencies": {
-    "electron": "^44.9.0",
-    "electron-builder": "^26.15.3"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/josecruzchavez/gdw-mirror.git"
@@ -28,5 +55,9 @@
   "homepage": "https://gdw.mx",
   "bugs": {
     "url": "https://github.com/josecruzchavez/gdw-mirror/issues"
+  },
+  "devDependencies": {
+    "electron": "^44.9.0",
+    "electron-builder": "^26.15.3"
   }
 }
