@@ -1,0 +1,32 @@
+{
+  "name": "gdw-mirror",
+  "productName": "GDW Mirror Host",
+  "version": "0.2.0",
+  "description": "Espejo de pantalla macOS -> Windows por LAN. Sin control remoto, sin servicios, sin drivers.",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "host": "electron . --mode=host",
+    "viewer": "electron . --mode=viewer",
+    "dev:host": "electron . --mode=host --dev",
+    "dev:viewer": "electron . --mode=viewer --dev",
+    "dist:mac": "electron-builder --config builder/host.yml --mac zip",
+    "dist:mac:dmg": "electron-builder --config builder/host.yml --mac dmg",
+    "dist:win": "electron-builder --config builder/viewer.yml --win portable --x64",
+    "dist:win:zip": "electron-builder --config builder/viewer.yml --win zip --x64"
+  },
+  "author": "José Cruz Chávez <https://josecruzchavez.com>",
+  "license": "SEE LICENSE IN LICENSE",
+  "devDependencies": {
+    "electron": "^44.9.0",
+    "electron-builder": "^26.15.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josecruzchavez/gdw-mirror.git"
+  },
+  "homepage": "https://gdw.mx",
+  "bugs": {
+    "url": "https://github.com/josecruzchavez/gdw-mirror/issues"
+  }
+}

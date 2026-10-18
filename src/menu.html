@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>GDW Mirror</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: #15171f;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        color: #e8eaf2;
+        font: 13px/1.45 -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      body::-webkit-scrollbar { width: 0; height: 0; }
+      #root { padding: 10px 10px 8px; }
+
+      .head { display: flex; align-items: center; gap: 8px; padding: 2px 4px 8px; }
+      .head .name { font-weight: 600; font-size: 13.5px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: #4b5263; flex: none; }
+      .dot.live { background: #f5a623; box-shadow: 0 0 8px rgba(245, 166, 35, 0.6); }
+      .dot.ok { background: #34c759; box-shadow: 0 0 8px rgba(52, 199, 89, 0.6); }
+      .status { font-size: 11.5px; color: #8b93ab; padding: 0 4px 8px; }
+      .status.err { color: #fca5a5; }
+
+      .stats { display: flex; flex-wrap: wrap; gap: 5px; padding: 0 4px 9px; }
+      .chip {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10.5px;
+        color: #aab2c8;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+
+      button { font: inherit; color: inherit; background: none; border: 0; cursor: default; }
+
+      .primary {
+        display: block;
+        width: calc(100% - 8px);
+        margin: 0 4px 10px;
+        padding: 9px 10px;
+        border-radius: 8px;
+        background: #2b6cf6;
+        color: #fff;
+        font-weight: 600;
+        font-size: 13px;
+        text-align: center;
+      }
+      .primary:hover { background: #3d79f8; }
+      .primary.stop { background: #c0392b; }
+      .primary.stop:hover { background: #d0483a; }
+      .primary[disabled] { opacity: 0.55; }
+
+      .block { border-radius: 9px; background: rgba(255, 255, 255, 0.028); margin: 0 4px 7px; overflow: hidden; }
+      .block-head {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 9px;
+        cursor: default;
+      }
+      .block-head:hover { background: rgba(255, 255, 255, 0.04); }
+      .block-head .label { font-size: 12px; font-weight: 600; color: #b9c0d4; flex: 1; }
+      .block-head .value { font-size: 11.5px; color: #7d8598; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .chev { width: 9px; height: 9px; flex: none; color: #6f778e; transition: transform 0.15s ease; }
+      .block.open .chev { transform: rotate(90deg); }
+      .block-body { display: none; padding: 2px 5px 6px; }
+      .block.open .block-body { display: block; }
+
+      .opt { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; }
+      .opt:hover { background: rgba(255, 255, 255, 0.06); }
+      .opt .txt { flex: 1; font-size: 12.5px; }
+      .opt .sub { font-size: 10.5px; color: #6f778e; }
+      .mark { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #4b5263; flex: none; display: flex; align-items: center; justify-content: center; }
+      .opt.on .mark { border-color: #2b6cf6; background: #2b6cf6; }
+      .opt.on .mark::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+      .opt.square .mark { border-radius: 4px; }
+      .opt.on.square .mark::after { content: ''; width: 6px; height: 6px; border-radius: 1px; background: #fff; }
+
+      .row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; }
+      .row:hover { background: rgba(255, 255, 255, 0.06); }
+      .row .txt { flex: 1; font-size: 12.5px; }
+      .switch { width: 30px; height: 17px; border-radius: 999px; background: #3a3f4d; position: relative; flex: none; transition: background 0.15s ease; }
+      .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: #fff; transition: transform 0.15s ease; }
+      .switch.on { background: #34c759; }
+      .switch.on::after { transform: translateX(13px); }
+      .code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 17px;
+        letter-spacing: 4px;
+        color: #fff;
+        padding: 5px 8px;
+        text-align: center;
+      }
+      .link { display: block; width: 100%; text-align: left; padding: 6px 8px; border-radius: 6px; font-size: 12.5px; color: #b9c0d4; }
+      .link:hover { background: rgba(255, 255, 255, 0.06); }
+      .link.danger:hover { background: rgba(192, 57, 43, 0.25); color: #ff9a8f; }
+      .sep { height: 1px; background: rgba(255, 255, 255, 0.07); margin: 7px 9px; }
+      .foot { padding: 2px 4px 0; }
+      .ver { font-size: 10.5px; color: #5f677b; padding: 8px 8px 4px; }
+      .hint { font-size: 10.5px; color: #6f778e; padding: 2px 8px 4px; line-height: 1.5; }
+      .about-name { font-size: 12.5px; font-weight: 600; color: #e8eaf2; padding: 4px 8px 2px; }
+      .about-tag { font-size: 10.5px; color: #7d8598; padding: 0 8px 7px; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="head">
+        <span class="dot" id="dot"></span>
+        <span class="name" id="name">GDW Mirror</span>
+      </div>
+      <div class="status" id="status">—</div>
+      <div class="stats" id="stats"></div>
+
+      <button class="primary" id="share">Compartir pantalla</button>
+
+      <div id="blocks"></div>
+
+      <div class="foot">
+        <div class="sep"></div>
+        <button class="link" id="login">Abrir al iniciar sesión</button>
+        <button class="link" id="perm">Permisos de grabación de pantalla…</button>
+        <button class="link danger" id="quit">Salir de GDW Mirror</button>
+        <div class="ver" id="ver"></div>
+      </div>
+    </div>
+    <script src="menu.js"></script>
+  </body>
+</html>

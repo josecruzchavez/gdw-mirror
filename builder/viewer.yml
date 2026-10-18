@@ -1,0 +1,38 @@
+appId: com.gdw.mirror.view
+productName: GDW Mirror View
+copyright: Copyright © 2026 José Cruz Chávez · GDW · https://gdw.mx
+
+directories:
+  output: dist/viewer
+  buildResources: build
+
+files:
+  - package.json
+  - src/**/*
+
+extraMetadata:
+  main: src/entry-viewer.js
+
+asar: true
+
+win:
+  icon: build/icon.png
+  target:
+    - portable
+    - zip
+
+mac:
+  category: public.app-category.utilities
+  icon: build/icon.png
+  identity: null
+  target:
+    - zip
+
+linux:
+  target:
+    - AppImage
+
+portable:
+  artifactName: GDW-Mirror-View-${version}-${arch}-portable.exe
+
+artifactName: GDW-Mirror-View-${version}-${arch}.${ext}

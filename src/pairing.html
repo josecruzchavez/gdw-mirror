@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Conectar un equipo</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(1200px 600px at 50% -10%, #1c2030 0%, #0b0c11 60%);
+        color: #e8eaf2;
+        font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+        padding: 26px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        -webkit-user-select: none;
+      }
+      h1 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        align-self: flex-start;
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: #1b1e28;
+        border: 1px solid #262a38;
+        font-size: 12px;
+        color: #a9b0c6;
+      }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; }
+      .dot.live { background: #ff3b30; box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.16); }
+      .dot.ok { background: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.16); }
+      .code-card {
+        background: #12141c;
+        border: 1px solid #232734;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+      }
+      .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #7d849b; }
+      .code {
+        font: 600 44px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: 10px;
+        margin: 10px 0 4px;
+        color: #fff;
+        padding-left: 10px;
+      }
+      .addr {
+        font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #9aa3bd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .meta { color: #9aa3bd; font-size: 12.5px; text-align: center; min-height: 18px; }
+      .hint {
+        background: #101319;
+        border: 1px solid #1e2330;
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: #a6aec5;
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+      .hint b { color: #dfe3ef; font-weight: 600; }
+      .row { display: flex; gap: 10px; margin-top: auto; }
+      button {
+        font: inherit;
+        font-weight: 500;
+        border-radius: 10px;
+        border: 1px solid #2a2f3f;
+        background: #191d27;
+        color: #dfe3ef;
+        padding: 10px 14px;
+        cursor: pointer;
+        flex: 1;
+      }
+      button:hover { background: #202533; }
+      button.primary { background: #2b6cf6; border-color: #2b6cf6; color: #fff; }
+      button.primary:hover { background: #3a78fb; }
+      button.small { flex: 0 0 auto; padding: 4px 10px; font-size: 12px; border-radius: 8px; }
+      .error { color: #fca5a5; font-size: 12.5px; }
+    </style>
+  </head>
+  <body>
+    <h1>Conectar un equipo</h1>
+    <div class="pill"><span class="dot" id="dot"></span><span id="status">Sin compartir</span></div>
+
+    <div class="code-card">
+      <div class="label">Código de conexión</div>
+      <div class="code" id="code">—— —— ——</div>
+      <div class="addr">
+        <span id="addr">—</span>
+        <button class="small" id="copy">Copiar</button>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
+
+    <div class="hint">
+      En la PC con Windows abre <b>GDW Mirror View</b> y elige este Mac en la lista (o escribe la dirección). Si activaste
+      el código, introdúcelo; si no, conecta directo. La conexión es entre los dos equipos: nada pasa por internet.
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <div class="row">
+      <button id="stop">Detener compartición</button>
+      <button class="primary" id="close">Cerrar</button>
+    </div>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      let last = null;
+
+      function render(state) {
+        if (!state) return;
+        last = state;
+        el('status').textContent = state.sharing
+          ? state.peerConnected
+            ? 'Compartiendo · conectado'
+            : 'Compartiendo · esperando conexión'
+          : state.starting
+          ? 'Iniciando…'
+          : 'Sin compartir';
+        el('dot').className = 'dot' + (state.sharing ? (state.peerConnected ? ' ok' : ' live') : '');
+        el('code').textContent = state.requireCode
+          ? (state.sharing && state.code ? state.code : '—— —— ——')
+          : 'no requerido';
+        el('addr').textContent = state.sharing ? `http://${state.ip}:${state.port}` : 'Inicia la compartición desde la barra de estado';
+        el('meta').textContent = state.sharing && state.video
+          ? `${state.video.width}×${state.video.height} @ ${Math.round(state.video.fps || 0)} fps` +
+            (state.audio ? ' · audio del sistema' : '') +
+            (state.stats && state.stats.kbps ? ` · ${state.stats.kbps} kbps` : '')
+          : '';
+        el('error').textContent = state.error || '';
+        el('stop').disabled = !state.sharing && !state.starting;
+      }
+
+      window.panel.onState(render);
+      window.panel.ready();
+
+      el('copy').addEventListener('click', () => {
+        if (!last || !last.sharing) return;
+        window.panel.copy(`http://${last.ip}:${last.port}`);
+      });
+      el('stop').addEventListener('click', () => window.panel.stop());
+      el('close').addEventListener('click', () => window.panel.close());
+      el('copy').style.display = 'none';
+      setInterval(() => {
+        if (last && last.sharing) el('copy').style.display = '';
+      }, 500);
+    </script>
+  </body>
+</html>

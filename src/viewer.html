@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>GDW Mirror View</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: #0b0c11;
+        color: #e8eaf2;
+        font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        overflow: hidden;
+      }
+      button {
+        font: inherit;
+        border-radius: 10px;
+        border: 1px solid #2a2f3f;
+        background: #191d27;
+        color: #dfe3ef;
+        padding: 10px 14px;
+        cursor: pointer;
+      }
+      button:hover { background: #232838; }
+      button.primary { background: #2b6cf6; border-color: #2b6cf6; color: #fff; }
+      button.primary:hover { background: #3a78fb; }
+      button:disabled { opacity: 0.45; cursor: default; }
+      input {
+        font: inherit;
+        background: #12141c;
+        border: 1px solid #262b3a;
+        border-radius: 10px;
+        color: #eef1f8;
+        padding: 11px 13px;
+        outline: none;
+        width: 100%;
+      }
+      input:focus { border-color: #2b6cf6; }
+      .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.1px; color: #7d849b; margin-bottom: 6px; }
+
+      #connect {
+        height: 100%;
+        display: grid;
+        grid-template-columns: minmax(260px, 1fr) minmax(320px, 420px);
+        gap: 1px;
+        background: #171a23;
+      }
+      .pane { background: #0b0c11; padding: 26px 24px; overflow: auto; }
+      @media (max-width: 760px) {
+        #connect { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+        .pane { padding: 18px 16px; }
+      }
+      h1 { font-size: 18px; margin: 0 0 4px; font-weight: 600; letter-spacing: -0.3px; }
+      .sub { color: #8b93ab; font-size: 13px; margin-bottom: 20px; }
+
+      .hosts { display: flex; flex-direction: column; gap: 8px; }
+      .host {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid #1f2431;
+        background: #10131b;
+        border-radius: 12px;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+      }
+      .host:hover { border-color: #33405c; }
+      .host .name { font-weight: 500; }
+      .host .where { color: #7d849b; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .host .badge {
+        margin-left: auto;
+        font-size: 11px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: #1b2030;
+        color: #8f98b2;
+        border: 1px solid #262c3d;
+        white-space: nowrap;
+      }
+      .host .badge.live { background: rgba(52, 211, 153, 0.12); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.28); }
+      .empty {
+        border: 1px dashed #242a38;
+        border-radius: 12px;
+        padding: 22px;
+        color: #6f778e;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .form { display: flex; flex-direction: column; gap: 14px; }
+      .row2 { display: grid; grid-template-columns: 1fr 96px; gap: 10px; }
+      .code-input { font: 600 26px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 8px; text-align: center; padding: 14px; }
+      .status { min-height: 22px; font-size: 13px; color: #8b93ab; }
+      .status.error { color: #fca5a5; }
+      .note { color: #6f778e; font-size: 12px; line-height: 1.6; }
+      .credits { margin-top: 26px; padding-top: 16px; border-top: 1px solid #1d212c; }
+      .credits-title { font-size: 12px; font-weight: 600; color: #8b93ab; margin-bottom: 6px; }
+      .credits-text { font-size: 11.5px; color: #6f778e; line-height: 1.65; max-width: 46ch; }
+      .credits-text a, .credits-links a { color: #7d93c4; text-decoration: none; }
+      .credits-text a:hover, .credits-links a:hover { color: #a9c0f0; text-decoration: underline; }
+      .credits-links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 11.5px; }
+
+      #connect { padding-top: 34px; }
+      #dragbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 34px;
+        -webkit-app-region: drag;
+        z-index: 100;
+      }
+
+      #wincontrols {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 34px;
+        display: none;
+        align-items: center;
+        gap: 3px;
+        padding-right: 7px;
+        z-index: 200;
+        -webkit-app-region: no-drag;
+        opacity: 0.38;
+        transition: opacity 0.18s ease;
+      }
+      #wincontrols.on { display: flex; }
+      body.focused #wincontrols,
+      #wincontrols:hover { opacity: 1; }
+      #wincontrols button {
+        width: 26px;
+        height: 18px;
+        padding: 0;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        color: #cbd2e4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-app-region: no-drag;
+      }
+      #wincontrols button:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+      #wincontrols button.close:hover { background: #c0392b; border-color: #c0392b; color: #fff; }
+      #wincontrols svg { width: 9px; height: 9px; display: block; }
+      body.fs #wincontrols { display: none; }
+      body.custom #overlay { padding-right: 104px; }
+
+      #stage { position: fixed; inset: 0; display: none; background: #000; }
+      #stage.on { display: block; }
+      #video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+      #overlay {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 16px;
+        background: linear-gradient(180deg, rgba(6, 8, 14, 0.92), rgba(6, 8, 14, 0));
+        transition: opacity 0.25s ease;
+        font-size: 12.5px;
+      }
+      #overlay.hidden { opacity: 0; pointer-events: none; }
+      #overlay .title { font-weight: 600; color: #fff; margin-right: 4px; -webkit-app-region: drag; }
+      #overlay .chip {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #aab2c8;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        padding: 3px 10px;
+        -webkit-app-region: drag;
+      }
+      #overlay .spacer { flex: 1; -webkit-app-region: drag; }
+      #overlay button { padding: 6px 12px; font-size: 12.5px; background: rgba(25, 29, 39, 0.9); -webkit-app-region: no-drag; }
+      #overlay button.active { background: #2b6cf6; border-color: #2b6cf6; color: #fff; }
+      #offline {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        color: #cbd2e4;
+      }
+      #offline.on { display: flex; }
+    </style>
+  </head>
+  <body>
+    <div id="wincontrols">
+      <button id="wc-min" type="button" title="Minimizar" aria-label="Minimizar">
+        <svg viewBox="0 0 9 9"><path d="M2 4.5h5" stroke="currentColor" stroke-width="1" fill="none" /></svg>
+      </button>
+      <button id="wc-max" type="button" title="Maximizar" aria-label="Maximizar">
+        <svg viewBox="0 0 9 9"><rect x="2" y="2" width="5" height="5" stroke="currentColor" stroke-width="1" fill="none" /></svg>
+      </button>
+      <button id="wc-close" class="close" type="button" title="Cerrar" aria-label="Cerrar">
+        <svg viewBox="0 0 9 9"><path d="M2.5 2.5l4 4M6.5 2.5l-4 4" stroke="currentColor" stroke-width="1" fill="none" /></svg>
+      </button>
+    </div>
+    <div id="connect">
+      <div id="dragbar"></div>
+      <section class="pane">
+        <h1>Equipos en la red</h1>
+        <div class="sub">Macs con GDW Mirror disponibles en tu red local.</div>
+        <div class="hosts" id="hosts">
+          <div class="empty">Buscando equipos…</div>
+        </div>
+        <div class="credits">
+          <div class="credits-title">GDW Mirror View</div>
+          <div class="credits-text">
+            Desarrollado por <a href="https://josecruzchavez.com" target="_blank" rel="noreferrer">José Cruz Chávez</a>
+            con asistencia de IA, para compartir la pantalla de una Mac en llamadas y conferencias desde Windows a
+            resolución nativa, sin instalar servicios ni drivers.
+          </div>
+          <div class="credits-links">
+            <a href="https://josecruzchavez.com" target="_blank" rel="noreferrer">josecruzchavez.com</a>
+            <a href="https://gdw.mx" target="_blank" rel="noreferrer">gdw.mx</a>
+            <a href="https://www.paypal.com/paypalme/gestiondigitalweb" target="_blank" rel="noreferrer">Invitar un café</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="pane">
+        <h1>Conectar</h1>
+        <div class="sub">Elige un equipo de la lista o escribe su dirección.</div>
+        <div class="form">
+          <div>
+            <div class="label">Dirección del Mac</div>
+            <div class="row2">
+              <input id="host" placeholder="192.168.1.20" autocomplete="off" spellcheck="false" />
+              <input id="port" value="47820" autocomplete="off" spellcheck="false" />
+            </div>
+          </div>
+          <div>
+            <div class="label">Código de 6 dígitos</div>
+            <input id="code" class="code-input" maxlength="6" inputmode="numeric" placeholder="——————" autocomplete="off" />
+          </div>
+          <button class="primary" id="go">Conectar</button>
+          <div class="status" id="status"></div>
+          <div class="note">
+            El Mac debe estar compartiendo pantalla. La conexión es directa, sin servidores intermedios ni
+            instalación de servicios.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="stage">
+      <video id="video" autoplay playsinline></video>
+      <div id="offline"><strong>Sin señal</strong><span>Reconectando…</span></div>
+      <div id="overlay">
+        <span class="title" id="peer">—</span>
+        <span class="chip" id="res">—</span>
+        <span class="chip" id="fps">—</span>
+        <span class="chip" id="bitrate">—</span>
+        <span class="chip" id="rtt">—</span>
+        <span class="spacer"></span>
+        <button id="btn-ontop">Siempre visible</button>
+        <button id="btn-full">Pantalla completa</button>
+        <button id="btn-exit">Desconectar</button>
+      </div>
+    </div>
+
+    <script src="viewer.js"></script>
+  </body>
+</html>

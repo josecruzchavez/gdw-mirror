@@ -1,0 +1,35 @@
+# Dependencias
+node_modules/
+
+# Binarios compilados (se publican en GitHub Releases, no en el repo)
+dist/
+build/*.dmg
+build/*.zip
+*.exe
+*.dmg
+*.blockmap
+
+# Sistema
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# Logs y temporales
+*.log
+npm-debug.log*
+probe/
+tmp/
+.tmp/
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Entorno local (no debe contener secretos versionados)
+.env
+.env.local
