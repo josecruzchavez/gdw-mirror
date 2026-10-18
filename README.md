@@ -497,6 +497,42 @@ npx electron-builder --config builder/host.yml --mac zip --x64
   Así se generó este proyecto.
 - El `.app` de macOS **solo se puede compilar desde macOS**.
 
+### Publicación automática (GitHub Actions)
+
+El repositorio incluye un workflow en [`.github/workflows/release.yml`](.github/workflows/release.yml) que
+compila ambas plataformas y publica el release.
+
+**Se dispara de dos formas:**
+
+```bash
+# 1. Al empujar un tag
+git tag v0.2.1
+git push origin v0.2.1
+
+# 2. Manualmente, indicando el tag
+gh workflow run release.yml -f tag=v0.2.0
+```
+
+**Qué hace:**
+
+| Job | Runner | Acción |
+| --- | --- | --- |
+| `meta` | ubuntu | Lee la versión de `package.json` y deriva el tag |
+| `build-mac` | macos-14 | Compila el host arm64, verifica `codesign --deep --strict` |
+| `build-win` | windows-latest | Compila el receptor x64 portable |
+| `publish` | ubuntu | Calcula SHA-256 y crea o actualiza el release con `gh` |
+
+El job `publish` es idempotente: si el release ya existe, **reemplaza** los archivos (`--clobber`) en lugar
+de fallar. Las notas salen de [`builder/RELEASE-NOTES.md`](builder/RELEASE-NOTES.md) — **actualízalo antes
+de cada versión**.
+
+> **Nota técnica:** los comandos de build usan `--publish never`. Sin eso, electron-builder detecta el
+> entorno de CI e intenta publicar por su cuenta, fallando con
+> `GitHub Personal Access Token is not set`. La publicación la hace el job final con `gh`.
+
+**Para lanzar el workflow sobre la versión actual**, recuerda subir antes el cambio de `version` en
+`package.json`; el tag debe coincidir (`version: 0.2.1` → tag `v0.2.1`).
+
 ## Desarrollo
 
 ```bash
@@ -564,9 +600,12 @@ src/
 builder/
   host.yml           configuración de empaquetado macOS
   viewer.yml         configuración de empaquetado Windows
+  RELEASE-NOTES.md   notas del release (las usa el workflow)
 build/
   icon.png           ícono de la app
   entitlements.mac.plist  entitlements para la firma ad-hoc
+.github/
+  workflows/release.yml   compilación y publicación automática
 ```
 
 ## Limitaciones conocidas
