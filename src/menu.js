@@ -230,6 +230,7 @@ function render(s) {
       inner.appendChild(tag);
 
       const links = [
+        { label: 'Sitio del proyecto', url: 'https://mirror.gdw.mx/' },
         { label: 'josecruzchavez.com', url: 'https://josecruzchavez.com' },
         { label: 'gdw.mx · desarrollos', url: 'https://gdw.mx' },
         { label: 'Invítame un café', url: 'https://www.paypal.com/paypalme/gestiondigitalweb' },

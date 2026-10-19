@@ -512,11 +512,11 @@ builds both platforms and publishes the release.
 
 ```bash
 # 1. On pushing a tag
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 
 # 2. Manually, specifying the tag
-gh workflow run release.yml -f tag=v0.2.0
+gh workflow run release.yml -f tag=v0.2.2
 ```
 
 **What it does:**
@@ -537,7 +537,7 @@ before each release**.
 > `GitHub Personal Access Token is not set`. Publishing is done by the final job with `gh`.
 
 **To run the workflow for the current version**, remember to bump `version` in `package.json` first; the tag
-must match (`version: 0.2.1` → tag `v0.2.1`).
+must match (`version: 0.2.2` → tag `v0.2.2`).
 
 ## Development
 
@@ -580,7 +580,7 @@ curl -s http://127.0.0.1:47820/hello
 Expected response:
 
 ```json
-{"app":"gdwmirror","version":"0.2.0","name":"...","sharing":true,"requireCode":false}
+{"app":"gdwmirror","version":"0.2.2","name":"...","sharing":true,"requireCode":false}
 ```
 
 ## Project structure
@@ -620,7 +620,8 @@ build/
 - **fps above 90 don't work.** The macOS encoder stops emitting frames with `maxFramerate` near 120. The
   ceiling is 90.
 - **Protected audio (DRM)** may not be captured.
-- **No automatic reconnection.** If the network drops, you have to reconnect.
+- **Limited automatic reconnection.** After a connection drops, the app waits 3 seconds, then retries up to six
+  times at 1.5-second intervals. If it cannot recover, it shows a message and you must reconnect manually.
 - **No window selection.** Full screen only (not a single app).
 - **macOS arm64 + x64 and Windows x64** in the published binaries. No Windows ARM64.
 - **Receiving on the same Mac** drops to ~60 fps because decoding competes with encoding. On a separate
@@ -667,8 +668,8 @@ warnings. Only browser downloads carry it.
 
 ## Roadmap
 
-- [ ] HEVC / AV1 when the receiver supports it.
-- [ ] Automatic reconnection on network loss.
+- [x] Prefer AV1 and HEVC when supported; WebRTC negotiates mutually supported codecs with fallbacks.
+- [x] Limited automatic reconnection after connection loss.
 - [ ] Window selection in addition to full screen.
 - [ ] Multiple simultaneous receivers.
 - [ ] Signing and notarization.

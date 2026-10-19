@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag a publicar (ej. v0.2.0). Debe existir.'
+        description: 'Tag a publicar (ej. v0.2.2). Debe existir.'
         required: true
 
 permissions:

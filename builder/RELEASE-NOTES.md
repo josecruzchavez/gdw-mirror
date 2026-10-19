@@ -1,4 +1,4 @@
-# GDW Mirror 0.2.1
+# GDW Mirror 0.2.2
 
 Comparte la pantalla de tu Mac en llamadas y conferencias desde una PC con Windows, a resolución nativa y
 por red local.
@@ -8,22 +8,20 @@ por red local.
 También puedes instalar **GDW Mirror View** desde [Microsoft Store](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS).
 La versión de la Store está firmada y se actualiza desde Microsoft. El `.exe` portable de esta release es una descarga independiente y no está firmado.
 
-## Novedades en 0.2.1
+## Novedades en 0.2.2
 
-- **Arreglo del permiso de grabación de pantalla**: al pulsar "Compartir pantalla", la app dispara el prompt
-  nativo y aparece en *Ajustes → Privacidad y seguridad → Grabación de pantalla*, sin tener que agregarla
-  manualmente.
-- **Binario x64 para Mac Intel**, además del arm64 para Apple Silicon.
-- **Nuevo icono**: diseño de dos monitores, unificado con el sitio web.
-- **Texto del enlace de donación unificado** ("Invítame un café").
+- **Reconexión automática**: el receptor reintenta conectar ante desconexiones temporales e informa si se agotan los intentos.
+- **Códecs de video**: el Host prioriza AV1 y HEVC cuando ambos equipos los admiten, manteniendo alternativas compatibles.
+- **Enlace al sitio del proyecto** en el menú «Acerca de» de macOS.
+- **Receptor Windows actualizado** con la lógica de reconexión y los mensajes de estado correspondientes.
 
 ## Descargas
 
-| Archivo | Plataforma | Tamaño |
-| --- | --- | --- |
-| `GDW-Mirror-Host-0.2.1-arm64.zip` | macOS (Apple Silicon) | ~121 MB |
-| `GDW-Mirror-Host-0.2.1-x64.zip` | macOS (Intel) | ~128 MB |
-| `GDW-Mirror-View-0.2.1-x64-portable.exe` | Windows 10/11 x64 | ~95 MB |
+| Archivo | Plataforma |
+| --- | --- |
+| `GDW-Mirror-Host-0.2.2-arm64.zip` | macOS (Apple Silicon) |
+| `GDW-Mirror-Host-0.2.2-x64.zip` | macOS (Intel) |
+| `GDW-Mirror-View-0.2.2-x64-portable.exe` | Windows 10/11 x64 |
 
 ---
 
@@ -64,7 +62,7 @@ xattr -dr com.apple.quarantine "/Applications/GDW Mirror Host.app"
 Descarga con `gh` o `curl` (no pasan por el navegador y no añaden cuarentena):
 
 ```bash
-gh release download v0.2.1 --repo josecruzchavez/gdw-mirror
+gh release download v0.2.2 --repo josecruzchavez/gdw-mirror
 ```
 
 O compila desde el código: los binarios locales no llevan cuarentena.
@@ -124,8 +122,8 @@ O compila desde el código: los binarios locales no llevan cuarentena.
 
 - Un solo receptor a la vez.
 - fps por encima de 90 no funcionan (límite del encoder de macOS).
-- Solo Apple Silicon y Windows x64 en estos binarios.
-- Sin reconexión automática.
+- Apple Silicon, Intel y Windows x64 en estos binarios.
+- La reconexión es limitada: si se agotan los reintentos, hay que volver a conectar manualmente.
 - Sin selección de ventana (solo pantalla completa).
 - Audio protegido por DRM puede no capturarse.
 

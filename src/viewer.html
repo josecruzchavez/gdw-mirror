@@ -109,9 +109,10 @@
         position: fixed;
         top: 0;
         left: 0;
-        right: 0;
+        right: 104px;
         height: 34px;
-        -webkit-app-region: drag;
+        -webkit-app-region: no-drag;
+        pointer-events: none;
         z-index: 100;
       }
 
@@ -222,6 +223,7 @@
             resolución nativa, sin instalar servicios ni drivers.
           </div>
           <div class="credits-links">
+            <a href="https://mirror.gdw.mx/" target="_blank" rel="noreferrer">Sitio del proyecto</a>
             <a href="https://josecruzchavez.com" target="_blank" rel="noreferrer">josecruzchavez.com</a>
             <a href="https://gdw.mx" target="_blank" rel="noreferrer">gdw.mx</a>
             <a href="https://www.paypal.com/paypalme/gestiondigitalweb" target="_blank" rel="noreferrer">Invítame un café</a>
@@ -256,7 +258,10 @@
 
     <div id="stage">
       <video id="video" autoplay playsinline></video>
-      <div id="offline"><strong>Sin señal</strong><span>Reconectando…</span></div>
+      <div id="offline">
+        <strong id="offline-title">Sin señal</strong>
+        <span id="offline-message">Reconectando…</span>
+      </div>
       <div id="overlay">
         <span class="title" id="peer">—</span>
         <span class="chip" id="res">—</span>

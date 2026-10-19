@@ -1,7 +1,7 @@
 {
   "name": "gdw-mirror",
   "productName": "GDW Mirror Host",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Espejo de pantalla (screen mirror) macOS → Windows por LAN. Comparte la pantalla de tu Mac en Meet, Zoom u OBS desde una PC, a resolución nativa. Sin control remoto, sin servicios, sin drivers.",
   "keywords": [
     "screen-mirror",

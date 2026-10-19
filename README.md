@@ -358,7 +358,7 @@ podía sonar más bajo que 73%.
 GDW Mirror Host (Mac)                     GDW Mirror View (Windows)
   barra de estado                           ventana
   ScreenCaptureKit / getDisplayMedia  ──▶   WebRTC (recibe)
-  VideoToolbox H.264                        decodificación por hardware
+  VideoToolbox (códec negociado)             decodificación por hardware
         │                                          ▲
         └──── HTTP local :47820 (SDP) ─────────────┘
               UDP :47821 (descubrimiento)
@@ -372,8 +372,11 @@ GDW Mirror Host (Mac)                     GDW Mirror View (Windows)
 - **Media**: WebRTC P2P directo, sin STUN ni TURN. Los candidatos mDNS de Chromium están desactivados
   (`WebRtcHideLocalIpsWithMdns`), porque Windows sin Bonjour no puede resolver `.local` y la conexión
   fallaría.
-- **Códecs**: H.264 (preferido, decodificación por hardware) → RED → ULPFEC. Si el receptor no soporta
-  H.264 se negocia VP8/VP9.
+- **Códecs**: el Host prefiere AV1 → HEVC/H.265 → H.264 → VP9 → VP8 según sus capacidades. WebRTC negocia
+  solo los códecs compatibles con ambos equipos; si AV1 o HEVC no están disponibles en el receptor, usa
+  una alternativa compatible.
+- **Reconexión**: ante una desconexión temporal, el receptor espera 3 segundos y reintenta hasta 6 veces,
+  con pausas de 1,5 segundos. Si no logra reconectar, muestra un aviso para volver a conectar manualmente.
 
 Nada sale a internet. No hay servidores intermedios. No hay telemetría.
 
@@ -484,11 +487,11 @@ compila ambas plataformas y publica el release.
 
 ```bash
 # 1. Al empujar un tag
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 
 # 2. Manualmente, indicando el tag
-gh workflow run release.yml -f tag=v0.2.0
+gh workflow run release.yml -f tag=v0.2.2
 ```
 
 **Qué hace:**
@@ -509,7 +512,7 @@ de cada versión**.
 > `GitHub Personal Access Token is not set`. La publicación la hace el job final con `gh`.
 
 **Para lanzar el workflow sobre la versión actual**, recuerda subir antes el cambio de `version` en
-`package.json`; el tag debe coincidir (`version: 0.2.1` → tag `v0.2.1`).
+`package.json`; el tag debe coincidir (`version: 0.2.2` → tag `v0.2.2`).
 
 ## Desarrollo
 
@@ -552,7 +555,7 @@ curl -s http://127.0.0.1:47820/hello
 Respuesta esperada:
 
 ```json
-{"app":"gdwmirror","version":"0.2.0","name":"...","sharing":true,"requireCode":false}
+{"app":"gdwmirror","version":"0.2.2","name":"...","sharing":true,"requireCode":false}
 ```
 
 ## Estructura del proyecto
@@ -592,7 +595,8 @@ build/
 - **fps por encima de 90 no funcionan.** El encoder de macOS deja de emitir frames con `maxFramerate` cerca
   de 120. El techo es 90.
 - **Audio protegido (DRM)** puede no capturarse.
-- **Sin reconexión automática.** Si se cae la red, hay que volver a conectar.
+- **Reconexión automática limitada.** Si la conexión se interrumpe, espera 3 segundos y prueba hasta seis veces
+  cada 1.5 segundos. Si no se recupera, muestra un aviso y hay que iniciar la conexión de nuevo.
 - **Sin selección de ventana.** Solo pantalla completa (no una app suelta).
 - **macOS arm64 + x64 y Windows x64** en los binarios publicados. Sin Windows ARM64.
 - **La recepción en la misma Mac** baja a ~60 fps porque decodificar compite con codificar. En un equipo
@@ -640,8 +644,8 @@ avisos. Solo los descargados por un navegador la llevan.
 
 ## Hoja de ruta
 
-- [ ] HEVC / AV1 cuando el receptor lo soporte.
-- [ ] Reconexión automática si se pierde la red.
+- [x] Preferencia por AV1 y HEVC cuando el host los anuncia; WebRTC negocia solo códecs compatibles y conserva H.264/VP9/VP8 como alternativas.
+- [x] Reconexión automática limitada tras perder la conexión.
 - [ ] Selección de ventana además de pantalla completa.
 - [ ] Varios receptores simultáneos.
 - [ ] Firma y notarización.

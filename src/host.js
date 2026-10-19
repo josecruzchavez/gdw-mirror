@@ -18,6 +18,45 @@ let statsTimer = null;
 let lastSample = null;
 let applySendParams = null;
 
+function codecPriority(mimeType) {
+  switch (mimeType) {
+    case 'video/av1':
+      return 0;
+    case 'video/h265':
+    case 'video/hevc':
+      return 1;
+    case 'video/h264':
+      return 2;
+    case 'video/vp9':
+      return 3;
+    case 'video/vp8':
+      return 4;
+    case 'video/red':
+    case 'video/ulpfec':
+      return 90;
+    case 'video/rtx':
+      return 100;
+    default:
+      return 5;
+  }
+}
+
+function orderVideoCodecs(codecs) {
+  const groups = [];
+  for (let i = 0; i < codecs.length; i += 1) {
+    const codec = codecs[i];
+    const mimeType = (codec.mimeType || '').toLowerCase();
+    const group = [codec];
+    if (mimeType !== 'video/rtx' && codecs[i + 1] && (codecs[i + 1].mimeType || '').toLowerCase() === 'video/rtx') {
+      group.push(codecs[i + 1]);
+      i += 1;
+    }
+    groups.push({ priority: codecPriority(mimeType), order: i, codecs: group });
+  }
+  groups.sort((a, b) => a.priority - b.priority || a.order - b.order);
+  return groups.flatMap((group) => group.codecs);
+}
+
 function waitForIce(connection, timeoutMs) {
   return new Promise((resolve) => {
     if (connection.iceGatheringState === 'complete') return resolve();
@@ -102,6 +141,7 @@ async function teardown() {
 
 function startStats() {
   stopStats();
+  let lastCodec = null;
   statsTimer = setInterval(async () => {
     if (!pc || pc.connectionState === 'closed') return;
     let report;
@@ -117,6 +157,14 @@ function startStats() {
       if (r.type === 'candidate-pair' && (r.nominated || r.state === 'succeeded') && r.bytesSent) pair = r;
     });
     if (!out) return;
+    const codec = out.codecId && report.get(out.codecId);
+    if (codec && codec.mimeType) {
+      const name = codec.mimeType.replace(/^video\//i, '').toUpperCase();
+      if (name !== lastCodec) {
+        log(`Códec de video negociado: ${name}`, 'ok');
+        lastCodec = name;
+      }
+    }
     const now = performance.now();
     let kbps = 0;
     let fps = out.framesPerSecond || 0;
@@ -238,20 +286,17 @@ window.engine.onStart(async ({ audio, profile, scaleMode, capture }) => {
     try {
       const caps = RTCRtpSender.getCapabilities('video');
       if (caps && caps.codecs && caps.codecs.length) {
-        const codecs = caps.codecs.slice();
-        const low = (c) => (c.mimeType || '').toLowerCase();
-        const h264 = codecs.findIndex((c) => low(c) === 'video/h264');
-        const ordered = [];
-        if (h264 >= 0) {
-          ordered.push(codecs[h264]);
-          if (codecs[h264 + 1] && low(codecs[h264 + 1]) === 'video/rtx') ordered.push(codecs[h264 + 1]);
-          for (const c of codecs) {
-            if (low(c) === 'video/red' || low(c) === 'video/ulpfec') ordered.push(c);
-          }
-        }
-        for (const c of codecs) if (ordered.indexOf(c) === -1) ordered.push(c);
+        const ordered = orderVideoCodecs(caps.codecs);
         videoTransceiver.setCodecPreferences(ordered);
-        log(`Códecs: ${ordered.filter((c) => low(c).indexOf('video/') === 0 && low(c).indexOf('video/rtx') !== 0).map((c) => low(c).replace('video/', '')).slice(0, 3).join(' > ')}`);
+        const names = Array.from(
+          new Set(
+            ordered
+              .map((codec) => (codec.mimeType || '').toLowerCase())
+              .filter((mimeType) => mimeType.startsWith('video/') && !['video/rtx', 'video/red', 'video/ulpfec'].includes(mimeType))
+              .map((mimeType) => mimeType.slice('video/'.length).toUpperCase()),
+          ),
+        );
+        log(`Códecs de envío disponibles (preferencia): ${names.join(' > ')}`);
       }
     } catch (e) {
       log(`No se pudieron fijar los códecs: ${e.message}`, 'err');

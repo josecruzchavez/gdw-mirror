@@ -13,6 +13,13 @@ let fpsWindowStart = performance.now();
 let currentFps = 0;
 let hideTimer = null;
 let selectedRequireCode = null;
+let disconnectTimer = null;
+let retryTimer = null;
+let connectionAttempt = 0;
+
+const DISCONNECT_GRACE_MS = 3000;
+const RETRY_DELAY_MS = 1500;
+const MAX_RETRIES = 6;
 
 function cleanError(err) {
   const raw = err && err.message ? err.message : String(err);
@@ -23,6 +30,12 @@ function setStatus(text, isError) {
   const node = el('status');
   node.textContent = text || '';
   node.className = 'status' + (isError ? ' error' : '');
+}
+
+function setOfflineState(title, message) {
+  el('offline-title').textContent = title;
+  el('offline-message').textContent = message;
+  el('offline').classList.add('on');
 }
 
 function showStage(on) {
@@ -72,6 +85,8 @@ function stopStats() {
 
 function teardown() {
   stopStats();
+  clearTimeout(disconnectTimer);
+  disconnectTimer = null;
   if (pc) {
     try {
       pc.ontrack = null;
@@ -139,25 +154,35 @@ function startStats() {
 }
 
 function scheduleRetry() {
-  if (!target || retries >= 6) {
-    setStatus('No se pudo mantener la conexión con el Mac.', true);
+  if (!target || retryTimer !== null) return;
+  if (retries >= MAX_RETRIES) {
+    setOfflineState('Conexión perdida', 'No se pudo reconectar. Pulsa Desconectar para volver a intentarlo.');
+    bumpOverlay();
+    teardown();
     return;
   }
   retries += 1;
-  el('offline').classList.add('on');
+  setOfflineState('Sin señal', `Intentando reconectar (${retries}/${MAX_RETRIES})…`);
   const saved = target;
   teardown();
-  setTimeout(() => {
-    connect(saved, { silent: true }).catch(() => scheduleRetry());
-  }, 1500);
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    connect(saved, { silent: true }).catch((err) => {
+      if (!target) return;
+      console.warn('Falló el intento de reconexión:', cleanError(err));
+      scheduleRetry();
+    });
+  }, RETRY_DELAY_MS);
 }
 
 async function connect(nextTarget, options) {
   const silent = options && options.silent;
+  const attempt = ++connectionAttempt;
   target = nextTarget;
   if (!silent) setStatus(`Conectando con ${nextTarget.host}…`);
 
   const info = await window.mirror.pair(nextTarget.host, nextTarget.port, nextTarget.code);
+  if (attempt !== connectionAttempt) return;
   if (info && info.name) {
     target.name = info.name;
     el('peer').textContent = info.name;
@@ -169,6 +194,7 @@ async function connect(nextTarget, options) {
   pc = connection;
 
   connection.ontrack = (event) => {
+    if (pc !== connection || attempt !== connectionAttempt) return;
     const stream = event.streams && event.streams[0] ? event.streams[0] : new MediaStream([event.track]);
     video.srcObject = stream;
     video.play().catch(() => {});
@@ -179,34 +205,55 @@ async function connect(nextTarget, options) {
   };
 
   connection.onconnectionstatechange = () => {
-    if (pc !== connection) return;
+    if (pc !== connection || attempt !== connectionAttempt) return;
     const state = connection.connectionState;
     if (state === 'connected') {
+      clearTimeout(disconnectTimer);
+      disconnectTimer = null;
       el('offline').classList.remove('on');
+      retries = 0;
     } else if (state === 'disconnected') {
-      el('offline').classList.add('on');
+      setOfflineState('Sin señal', 'Esperando que se recupere la conexión…');
+      clearTimeout(disconnectTimer);
+      disconnectTimer = setTimeout(() => {
+        disconnectTimer = null;
+        if (pc === connection && connection.connectionState === 'disconnected') scheduleRetry();
+      }, DISCONNECT_GRACE_MS);
     } else if (state === 'failed') {
+      clearTimeout(disconnectTimer);
+      disconnectTimer = null;
+      scheduleRetry();
+    } else if (state === 'closed') {
       scheduleRetry();
     }
   };
 
   try {
     await connection.setRemoteDescription({ type: 'offer', sdp: info.sdp });
+    if (attempt !== connectionAttempt || pc !== connection) return;
     const answer = await connection.createAnswer();
+    if (attempt !== connectionAttempt || pc !== connection) return;
     await connection.setLocalDescription(answer);
+    if (attempt !== connectionAttempt || pc !== connection) return;
     await waitForIce(connection);
+    if (attempt !== connectionAttempt || pc !== connection) return;
     await window.mirror.answer(nextTarget.host, nextTarget.port, nextTarget.code, connection.localDescription.sdp);
+    if (attempt !== connectionAttempt || pc !== connection) return;
     startStats();
   } catch (err) {
-    teardown();
+    if (attempt !== connectionAttempt || pc !== connection) return;
+    if (pc === connection) teardown();
     throw new Error(cleanError(err));
   }
 }
 
 async function disconnect(notifyHost) {
   const saved = target;
+  connectionAttempt += 1;
   target = null;
   retries = 0;
+  clearTimeout(retryTimer);
+  retryTimer = null;
   teardown();
   el('offline').classList.remove('on');
   showStage(false);
