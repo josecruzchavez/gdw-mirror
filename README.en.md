@@ -17,7 +17,6 @@ No remote control, no gamepads, no drivers, no installed services, no cloud, no 
 
 ## Table of contents
 
-- [Search terms](#search-terms)
 - [Origin of the project](#origin-of-the-project)
 - [What problem it solves](#what-problem-it-solves)
 - [Why not Sunshine / Moonlight](#why-not-sunshine--moonlight)
@@ -47,39 +46,9 @@ No remote control, no gamepads, no drivers, no installed services, no cloud, no 
 - [Roadmap](#roadmap)
 - [Author](#author)
 - [License](#license)
+- [Search terms](#search-terms)
 
 ---
-
-## Search terms
-
-If you got here searching for any of these, this is the project:
-
-**In English**
-
-`screen mirror` · `screen mirroring` · `mirror screen` · `mirror mac to windows` ·
-`mac screen to windows` · `share mac screen on windows` · `mac to windows screen sharing` ·
-`mac as second screen windows` · `display mirroring` · `screen casting lan` ·
-`share mac screen in google meet` · `share mac screen in zoom` · `mac screen capture for obs` ·
-`airplay alternative for windows` · `sunshine moonlight alternative for presentations` ·
-`low latency screen mirror lan` · `webrtc screen sharing desktop`
-
-**In Spanish**
-
-`espejo de pantalla` · `espejo de pantalla mac a windows` · `compartir pantalla de mac en windows` ·
-`ver pantalla de mac en pc` · `mandar pantalla de mac a windows` · `duplicar pantalla mac en windows` ·
-`pantalla extendida mac windows` · `compartir pantalla mac en meet` · `compartir pantalla mac en zoom` ·
-`pantalla de mac en obs` · `espejo mac sin cables` · `transmitir pantalla mac a pc por red local` ·
-`alternativa a airplay para windows`
-
-**Technical**
-
-`macOS to Windows` · `LAN screen mirror` · `WebRTC screen capture` · `ScreenCaptureKit mirror` ·
-`H.264 screen mirror` · `no drivers screen mirror` · `zero install screen mirror` ·
-`Electron screen mirror app`
-
-> This project is **not**: remote control, remote desktop (RDP/VNC), game streaming
-> (Moonlight/Parsec), or AirPlay. It is specifically a **one-way screen mirror**, Mac → Windows, for
-> presenting.
 
 ---
 
@@ -166,16 +135,18 @@ If you want to game, use Sunshine. If you want to present, use this.
 
 ### Option A: download from GitHub Releases
 
-Go to [**Releases**](../../releases) and download both files:
+Go to [**Releases**](../../releases) to download the macOS binaries and, if you prefer the portable
+version, the Windows `.exe`:
 
 | File | For |
 | --- | --- |
 | `GDW-Mirror-Host-<version>-arm64.zip` | Mac (Apple Silicon) |
 | `GDW-Mirror-Host-<version>-x64.zip` | Mac (Intel) |
-| `GDW-Mirror-View-<version>-x64-portable.exe` | Windows |
+| `GDW-Mirror-View-<version>-x64-portable.exe` | Windows (portable, unsigned) |
 
-> **About the security warnings.** The app is not signed with an Apple Developer ID nor a Windows code
-> signing certificate. Your browser will download it, and **the browser adds the quarantine attribute**
+> **About the security warnings.** The `.zip` and portable `.exe` files in this release are not signed
+> with an Apple Developer ID or a Windows code-signing certificate. When you download them in a browser,
+> **the browser adds the quarantine attribute**
 > (macOS) or Mark-of-the-Web (Windows). That makes the OS show a warning the first time. **This is
 > expected and does not mean the file is corrupted.** Exact steps below.
 
@@ -201,6 +172,11 @@ Go to [**Releases**](../../releases) and download both files:
    ask to **restart the app**; quit it from the panel (*Quit GDW Mirror*) and reopen it.
 
 #### Windows
+
+**Recommended — Microsoft Store:** install the [signed version of GDW Mirror View](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS).
+Microsoft distributes updates for this version.
+
+**Portable alternative from GitHub Releases (unsigned):**
 
 1. Copy `GDW-Mirror-View-<version>-x64-portable.exe` wherever you like. **It installs nothing.**
 2. Double-click.
@@ -647,14 +623,15 @@ Binaries are published in **GitHub Releases**, not the repository:
 | Platform | Status | Consequence |
 | --- | --- | --- |
 | macOS | **ad-hoc** (no Developer ID) | `codesign --verify` passes. The app opens directly if copied via USB/AirDrop. Downloaded from the browser, Gatekeeper blocks it once. |
-| Windows | **Unsigned** | SmartScreen shows a warning once. |
+| Windows — Microsoft Store | **Signed** | Install from [Microsoft Store](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS); Microsoft distributes updates. |
+| Windows — portable `.exe` from GitHub Releases | **Unsigned** | SmartScreen may show a warning the first time. |
 
 Verified: `codesign --verify --deep --strict` returns 0 and `Sealed Resources version=2 rules=13 files=10`.
 
 To eliminate the warnings permanently:
 
 - **macOS:** Apple Developer ID ($99 USD/year) + notarization.
-- **Windows:** OV code signing certificate (~$220 USD/year) or EV (~$149–349 USD/year).
+- **Windows — portable `.exe`:** a code-signing certificate is required to sign direct downloads. The Microsoft Store version is already signed.
 
 Files obtained via `git clone`, `curl`, or `gh release download` **carry no quarantine** and open without
 warnings. Only browser downloads carry it.
@@ -685,3 +662,34 @@ All rights reserved. See [LICENSE](LICENSE).
 
 The code is published for consultation and personal use. Commercial redistribution and publication of
 derived binaries are not authorized without permission.
+
+## Search terms
+
+If you got here searching for any of these, this is the project:
+
+**In English**
+
+`screen mirror` · `screen mirroring` · `mirror screen` · `mirror mac to windows` ·
+`mac screen to windows` · `share mac screen on windows` · `mac to windows screen sharing` ·
+`mac as second screen windows` · `display mirroring` · `screen casting lan` ·
+`share mac screen in google meet` · `share mac screen in zoom` · `mac screen capture for obs` ·
+`airplay alternative for windows` · `sunshine moonlight alternative for presentations` ·
+`low latency screen mirror lan` · `webrtc screen sharing desktop`
+
+**In Spanish**
+
+`espejo de pantalla` · `espejo de pantalla mac a windows` · `compartir pantalla de mac en windows` ·
+`ver pantalla de mac en pc` · `mandar pantalla de mac a windows` · `duplicar pantalla mac en windows` ·
+`pantalla extendida mac windows` · `compartir pantalla mac en meet` · `compartir pantalla mac en zoom` ·
+`pantalla de mac en obs` · `espejo mac sin cables` · `transmitir pantalla mac a pc por red local` ·
+`alternativa a airplay para windows`
+
+**Technical**
+
+`macOS to Windows` · `LAN screen mirror` · `WebRTC screen capture` · `ScreenCaptureKit mirror` ·
+`H.264 screen mirror` · `no drivers screen mirror` · `zero install screen mirror` ·
+`Electron screen mirror app`
+
+> This project is **not** remote control, remote desktop (RDP/VNC), game streaming
+> (Moonlight/Parsec), or AirPlay. It is specifically a **one-way screen mirror**, Mac → Windows, for
+> presenting.

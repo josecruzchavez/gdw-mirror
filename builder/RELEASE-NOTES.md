@@ -3,7 +3,7 @@
 Comparte la pantalla de tu Mac en llamadas y conferencias desde una PC con Windows, a resolución nativa y
 por red local.
 
-## Versión firmada para Windows
+## 💡 Recomendado para Windows: versión firmada en Microsoft Store
 
 También puedes instalar **GDW Mirror View** desde [Microsoft Store](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS).
 La versión de la Store está firmada y se actualiza desde Microsoft. El `.exe` portable de esta release es una descarga independiente y no está firmado.
