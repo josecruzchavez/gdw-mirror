@@ -3,6 +3,11 @@
 Comparte la pantalla de tu Mac en llamadas y conferencias desde una PC con Windows, a resolución nativa y
 por red local.
 
+## Versión firmada para Windows
+
+También puedes instalar **GDW Mirror View** desde [Microsoft Store](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS).
+La versión de la Store está firmada y se actualiza desde Microsoft. El `.exe` portable de esta release es una descarga independiente y no está firmado.
+
 ## Novedades en 0.2.1
 
 - **Arreglo del permiso de grabación de pantalla**: al pulsar "Compartir pantalla", la app dispara el prompt
@@ -24,9 +29,9 @@ por red local.
 
 ## ⚠️ Léelo antes de abrir — los avisos de seguridad son esperados
 
-La app **no está firmada** con un Developer ID de Apple ni con un certificado de Windows. Al descargarla por
+Los archivos de esta release **no están firmados** con un Developer ID de Apple ni con un certificado de Windows. Al descargar el `.zip` o el `.exe` portable por
 el navegador, el sistema añade el atributo de cuarentena (macOS) o Mark-of-the-Web (Windows), y muestra un
-aviso la primera vez. **No significa que el archivo esté dañado.**
+aviso la primera vez. **No significa que el archivo esté dañado.** Para instalar la versión firmada para Windows, usa el enlace de Microsoft Store de arriba.
 
 ### macOS — "no se puede abrir porque el desarrollador no puede ser verificado"
 
