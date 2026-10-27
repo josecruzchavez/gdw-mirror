@@ -1,15 +1,12 @@
 # GDW Mirror
 
-**Espejo de pantalla (screen mirror) de macOS a Windows por red local.** Comparte la pantalla de tu Mac en
-llamadas y conferencias desde una PC, a resolución nativa.
+**Espejo de pantalla entre macOS y Windows por red local.** Comparte lo que ocurre en cualquiera de los dos equipos y míralo en el otro, a resolución nativa.
 
-> **Mirror / espejo** es la palabra clave: no es control remoto ni escritorio remoto. Es un **screen
-> mirror** — la Mac se ve en Windows, sin mover su ratón ni su teclado.
+> **Mirror / espejo** es la palabra clave: no es control remoto ni escritorio remoto. La imagen viaja de un equipo al otro; no se controlan el ratón ni el teclado del equipo que comparte.
 
 Sin control remoto, sin gamepads, sin drivers, sin servicios instalados, sin nube, sin cuentas.
 
-- **GDW Mirror Host** (macOS): vive en la barra de estado, captura y codifica.
-- **GDW Mirror View** (Windows): ventana única que recibe y muestra. `.exe` portable.
+- **Una sola aplicación dual** para macOS y Windows: cualquiera de los equipos puede compartir su pantalla y el otro recibirla, en un solo sentido a la vez. Se ejecuta desde la barra de estado o la bandeja e incluye el visor remoto.
 
 > **This document is also available in English:** [README.en.md](README.en.md)
 
@@ -27,7 +24,7 @@ Sin control remoto, sin gamepads, sin drivers, sin servicios instalados, sin nub
   - [Opción B: clonar el repositorio](#opción-b-clonar-el-repositorio)
   - [Opción C: compilar desde el código](#opción-c-compilar-desde-el-código)
 - [Uso](#uso)
-  - [En la Mac](#1-en-la-mac)
+  - [En macOS](#1-en-macos)
   - [En Windows](#2-en-windows)
   - [Para Meet / Zoom / OBS](#3-para-meet--zoom--obs)
 - [Calidad de imagen](#calidad-de-imagen)
@@ -54,11 +51,9 @@ Sin control remoto, sin gamepads, sin drivers, sin servicios instalados, sin nub
 
 ## Origen del proyecto
 
-Este proyecto nació de una necesidad muy concreta: **dar una conferencia o una clase por Meet o Zoom
-compartiendo la pantalla de una Mac, pero operando desde un PC con Windows**, conservando la resolución
-nativa de la Mac.
+Este proyecto nació de una necesidad concreta: **compartir la pantalla de una Mac en un PC con Windows** durante una conferencia o clase, conservando la resolución nativa. La aplicación evolucionó a un diseño dual: ahora cualquiera de los dos equipos puede compartir su pantalla y el otro mostrarla, incluido el flujo de Windows a Mac.
 
-Las alternativas existentes no servían para ese caso:
+Las alternativas existentes no servían bien para ese caso. La necesidad original definió el proyecto; la aplicación actual ya no está limitada a esa dirección:
 
 - **Compartir desde el navegador de la Mac** degrada la imagen y ata la presentación al equipo que tiene la
   pantalla buena. Si la Mac está en un atril o conectada a un proyector, no puedes además operar la llamada
@@ -69,7 +64,7 @@ Las alternativas existentes no servían para ese caso:
 - **Herramientas de escritorio remoto** (VNC, AnyDesk, TeamViewer) añaden control de teclado y ratón, que
   aquí no se quiere, y suelen comprimir agresivamente el texto.
 
-La solución se acota a un solo camino: **capturar → codificar → transportar → mostrar**. Nada más.
+La solución se acota a un solo camino —**capturar → codificar → transportar → mostrar**— disponible en cualquiera de las dos direcciones, una transmisión a la vez.
 
 Fue desarrollada **con asistencia de IA**, partiendo de esa necesidad y no de una idea genérica de producto:
 cada decisión técnica (resolución nativa, fps adaptados al panel, audio del sistema, cero instalación) se
@@ -82,13 +77,9 @@ Eres ponente en una videollamada. Tienes:
 - una **Mac** con la pantalla buena, el material y las diapositivas;
 - una **PC con Windows** con la cámara, el micrófono, el monitor grande y el cliente de Meet/Zoom.
 
-Quieres presentar **tu pantalla de la Mac** dentro de la reunión que corre en Windows, con calidad
-suficiente para que el texto se lea.
+Puedes presentar la pantalla de la Mac en Windows, o la de Windows en macOS, con calidad suficiente para leer el texto. La dirección de transmisión es independiente de la configuración del equipo y solo puede haber una conexión activa a la vez. El equipo receptor muestra la pantalla en una ventana que puedes capturar con OBS o compartir directamente en la reunión.
 
-GDW Mirror hace exactamente eso: la Mac captura su pantalla en resolución nativa y la envía por la red
-local; Windows la muestra en una ventana que puedes capturar con OBS o compartir directamente en la reunión.
-
-**No hace** control remoto de la Mac. No mueve el ratón ni el teclado. No instala servicios ni drivers.
+**No hace** control remoto. No mueve el ratón ni el teclado del otro equipo. No instala servicios ni drivers.
 
 ## Por qué no Sunshine / Moonlight
 
@@ -114,7 +105,7 @@ Si quieres jugar, usa Sunshine. Si quieres presentar, esto.
 - **Audio del sistema** con un interruptor, sin instalar drivers de audio virtual.
 - **Descubrimiento automático** en la red local. Sin escribir IPs.
 - **Código de conexión opcional** — desactivado por defecto, activable en un clic.
-- **Cero instalación.** El receptor es un `.exe` portable.
+- **Una aplicación para ambos roles.** Comparte la pantalla o recibe la del otro equipo; solo una dirección a la vez.
 - **Cero nube.** Nada sale de tu red local.
 - **Selección de pantalla y de resolución enviada** desde el panel.
 - **Barra de estado nativa en macOS** sin ventanas flotantes.
@@ -141,50 +132,36 @@ portable, el `.exe` de Windows:
 
 | Archivo | Para |
 | --- | --- |
-| `GDW-Mirror-Host-<version>-arm64.zip` | Mac con Apple Silicon |
-| `GDW-Mirror-Host-<version>-x64.zip` | Mac con Intel |
-| `GDW-Mirror-View-<version>-x64-portable.exe` | Windows (portable, sin firmar) |
+| `GDW-Mirror-<version>-arm64.zip` y `.dmg` | Mac con Apple Silicon |
+| `GDW-Mirror-<version>-x64.zip` y `.dmg` | Mac con Intel |
+| `GDW-Mirror-<version>-x64-setup.exe` | Windows (instalador) |
+| `GDW-Mirror-<version>-x64-portable.exe` | Windows (portable) |
 
-> **Aviso sobre los avisos de seguridad.** Los archivos `.zip` y `.exe` portable de esta release no están
-> firmados con un Developer ID de Apple ni con un certificado de Windows. Al descargarlos desde el navegador,
-> **este añade el atributo de cuarentena**
-> (macOS) o Mark-of-the-Web (Windows). Eso hace que el sistema muestre un aviso la primera vez. **Es
-> esperado y no indica que el archivo esté dañado.** Los pasos exactos están abajo.
+> **Aviso de seguridad.** La aplicación para macOS está firmada con Developer ID y notarizada por Apple;
+> el `.dmg` también lleva el ticket de notarización adjunto. No debería requerir los pasos de apertura de
+> una app no identificada que se describen en tutoriales antiguos. El instalador y el portable de Windows
+> no están firmados con un certificado de Windows, por lo que SmartScreen puede mostrar un aviso.
 
 #### macOS
 
-1. Descomprime el `.zip` que corresponda a tu Mac (`arm64` para Apple Silicon, `x64` para Intel).
-   Se obtiene **GDW Mirror Host.app**.
+1. Abre el `.dmg` o descomprime el `.zip` que corresponda a tu Mac (`arm64` para Apple Silicon, `x64` para Intel). Obtendrás **GDW Mirror.app**.
 2. Arrastra la app a **Aplicaciones** (recomendado, no obligatorio).
-3. La primera vez **no hagas doble clic**. Haz **clic derecho sobre la app → Abrir**, y confirma
-   *Abrir* en el diálogo.
+3. Abre **GDW Mirror.app**. Al estar firmada con Developer ID y notarizada, macOS debería aceptarla
+   sin tener que omitir Gatekeeper ni quitar manualmente el atributo de cuarentena. Si aparece un aviso,
+   no lo ignores: confirma que la descarga proviene del release oficial.
 
-   Si macOS solo ofrece *Mover a la papelera*, usa una de estas dos alternativas:
-
-   - **Ajustes del Sistema → Privacidad y seguridad**, baja hasta el aviso sobre *GDW Mirror Host* y pulsa
-     **Abrir igualmente**.
-   - O en Terminal:
-     ```bash
-     xattr -dr com.apple.quarantine "/Applications/GDW Mirror Host.app"
-     ```
-
-4. La app **no abre ninguna ventana**: aparece un ícono de monitor en la barra de estado.
+4. La aplicación se inicia en la barra de estado, sin ventana principal. Abre el panel desde el icono para compartir esta pantalla o abrir el visor remoto.
 5. La primera vez que compartas pantalla, macOS pedirá **Grabación de pantalla**:
-   *Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla* → activa **GDW Mirror Host**.
+   *Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla* → activa **GDW Mirror**.
    El sistema pedirá **reiniciar la app**; ciérrala desde el panel (*Salir de GDW Mirror*) y vuelve a abrirla.
 
 #### Windows
 
-**Recomendado — Microsoft Store:** instala la [versión firmada de GDW Mirror View](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS).
-Microsoft distribuye las actualizaciones de esta versión.
+Descarga el instalador `GDW-Mirror-<version>-x64-setup.exe` o la versión portable `GDW-Mirror-<version>-x64-portable.exe` desde GitHub Releases. El instalador permite elegir la carpeta; la versión portable no requiere instalación.
 
-**Alternativa portable desde GitHub Releases (sin firmar):**
-
-1. Copia `GDW-Mirror-View-<version>-x64-portable.exe` donde quieras. **No instala nada.**
-2. Doble clic.
-3. Si aparece **"Windows protegió tu PC"**: pulsa **Más información** → **Ejecutar de todos modos**.
-4. La primera vez, Windows preguntará si permitir la app en redes privadas → **Permitir** (necesario para
-   descubrir la Mac).
+1. Ejecuta el instalador o copia el `.exe` portable donde quieras.
+2. Si aparece **"Windows protegió tu PC"**: pulsa **Más información** → **Ejecutar de todos modos**.
+3. La primera vez, Windows preguntará si permitir la app en redes privadas → **Permitir** (necesario para descubrir equipos).
 
 ### Opción B: clonar el repositorio
 
@@ -207,11 +184,13 @@ Ver [Compilar](#compilar).
 
 ## Uso
 
-### 1. En la Mac
+La misma aplicación sirve para compartir una pantalla o verla desde otro equipo. En macOS se abre desde el icono de la barra de estado; en Windows, desde el icono de la bandeja. Selecciona **Compartir pantalla** o **Ver pantalla remota**. El visor se abre en una ventana independiente. No se puede abrir el visor mientras se está compartiendo.
 
-1. Abre **GDW Mirror Host**. Aparece un ícono de monitor en la barra de estado.
-2. Clic en el ícono → se abre un **panel con bloques**. Pulsa **Compartir pantalla**.
-3. El ícono se pone rojo y muestra la resolución activa.
+### 1. En macOS
+
+1. Abre **GDW Mirror**. Aparece un ícono de monitor en la barra de estado.
+2. Clic en el ícono → se abre un **panel con bloques**. Elige **Compartir pantalla** para enviar la pantalla del Mac, o **Ver pantalla remota** para recibir una transmisión de Windows.
+3. Al compartir, el ícono se pone rojo y muestra la resolución activa.
 4. Si necesitas los datos de conexión, abre el bloque **Conexión** → **Detalles de conexión…**
 
 El panel es un popover propio, **no un menú nativo**: al elegir una opción **permanece abierto**, así puedes
@@ -231,13 +210,13 @@ En el pie: *Abrir al iniciar sesión*, *Permisos de grabación de pantalla…* y
 
 ### 2. En Windows
 
-1. Ejecuta `GDW-Mirror-View-<version>-x64-portable.exe`.
-2. El Mac aparece en **Equipos en la red**. Si no aparece, escribe la IP a mano (la muestra el bloque
-   *Conexión* de la Mac).
-3. Pulsa **Conectar**. Si el Mac tiene activado *Requerir código*, teclea el código de 6 dígitos; si no,
+1. Abre **GDW Mirror** desde el menú Inicio o ejecuta el `.exe` portable.
+2. En la bandeja, selecciona **Compartir pantalla** para enviar la pantalla de Windows, o **Ver pantalla remota** para recibir la pantalla del otro equipo.
+3. En el visor, selecciona el equipo que comparte en **Equipos remotos**. Si no aparece, escribe su IP manualmente (la muestra el bloque *Conexión* de quien comparte).
+4. Pulsa **Conectar**. Si el equipo que comparte tiene activado *Requerir código*, teclea el código de 6 dígitos; si no,
    conecta directo.
-4. La ventana **se redimensiona sola** al aspect ratio de la señal recibida.
-5. Arriba de la imagen: resolución, fps, bitrate y latencia. Botones **Siempre visible**, **Pantalla
+5. La ventana **se redimensiona sola** al aspect ratio de la señal recibida.
+6. Arriba de la imagen: resolución, fps, bitrate y latencia. Botones **Siempre visible**, **Pantalla
    completa** y **Desconectar**.
 
 La ventana no tiene barra de título nativa. Los controles (minimizar, maximizar, cerrar) son botones propios,
@@ -246,12 +225,13 @@ enfocarla. Se ocultan en pantalla completa.
 
 **Atajos:** `F` alterna pantalla completa · `Esc` la quita.
 
+
 ### 3. Para Meet / Zoom / OBS
 
 La mejor calidad se obtiene **pasando la imagen por OBS** en lugar de compartir la ventana directamente:
 
-1. En Windows, abre **OBS**.
-2. Fuente → **Captura de ventana** → elige la ventana de *GDW Mirror View*.
+1. En el equipo que recibirá la imagen, abre **OBS**.
+2. Fuente → **Captura de ventana** → elige la ventana de *GDW Mirror*.
 3. Clic derecho en la fuente → **Transformar → Ajustar a la pantalla**.
 4. **Iniciar cámara virtual**.
 5. En Meet/Zoom elige **OBS Virtual Camera** como cámara.
@@ -259,7 +239,7 @@ La mejor calidad se obtiene **pasando la imagen por OBS** en lugar de compartir 
 Así entregas 1080p60 limpio, sin la doble recompresión de compartir ventana, y puedes usar escenas,
 transiciones y grabación.
 
-Si prefieres lo simple, **compartir la ventana de GDW Mirror View directamente también funciona**. Meet y
+Si prefieres lo simple, **compartir la ventana de GDW Mirror directamente también funciona**. Meet y
 Zoom recomprimen a ~1080p de todos modos, así que la ganancia de OBS está en controlar la escena, no en
 resolución.
 
@@ -355,7 +335,7 @@ podía sonar más bajo que 73%.
 ## Cómo se conectan
 
 ```
-GDW Mirror Host (Mac)                     GDW Mirror View (Windows)
+GDW Mirror (Mac)                           GDW Mirror (Windows)
   barra de estado                           ventana
   ScreenCaptureKit / getDisplayMedia  ──▶   WebRTC (recibe)
   VideoToolbox (códec negociado)             decodificación por hardware
@@ -382,11 +362,11 @@ Nada sale a internet. No hay servidores intermedios. No hay telemetría.
 
 ## Solución de problemas
 
-### La Mac no aparece en la lista de Windows
+### El otro equipo no aparece en la lista
 
-1. Confirma que ambos están en la **misma red** y que la Mac está compartiendo.
-2. Revisa el **firewall de macOS**: debe permitir conexiones entrantes para *GDW Mirror Host*.
-3. Escribe la **IP a mano** en Windows. La muestra el bloque *Conexión* de la Mac.
+1. Confirma que ambos están en la **misma red** y que el equipo remoto está compartiendo.
+2. Revisa el firewall de ambos sistemas y permite conexiones entrantes para *GDW Mirror*.
+3. Escribe la **IP a mano** en el visor remoto. La muestra el bloque *Conexión* del equipo que comparte.
 4. Si tu router tiene **aislamiento de clientes / AP isolation**, desactívalo. Los equipos no se ven.
 
 ### macOS bloquea la app al abrirla
@@ -394,15 +374,15 @@ Nada sale a internet. No hay servidores intermedios. No hay telemetría.
 Esperado en descargas desde el navegador. Ver [Instalación](#opción-a-descargar-desde-github-releases):
 
 ```bash
-xattr -dr com.apple.quarantine "/Applications/GDW Mirror Host.app"
+xattr -dr com.apple.quarantine "/Applications/GDW Mirror.app"
 ```
 
-### "GDW Mirror Host no puede grabar la pantalla"
+### "GDW Mirror no puede grabar la pantalla"
 
 El permiso no está concedido o la app no se reinició después de concederlo:
 
 1. *Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla*.
-2. Activa **GDW Mirror Host**.
+2. Activa **GDW Mirror**.
 3. **Sal** de la app desde el panel y vuelve a abrirla. Sin reiniciar, el permiso no se aplica.
 
 > Nota: al cambiar el bundle ID entre versiones, macOS trata la app como nueva y **vuelve a pedir el
@@ -451,32 +431,24 @@ suspensión: la app bloquea el *display sleep* mientras comparte, pero no el *sy
 ## Compilar
 
 ```bash
-npm install
+npm ci
 
-# macOS (barra de estado)
+# macOS (Apple Silicon por defecto; genera ZIP y DMG)
 npm run dist:mac
 
-# Windows x64 portable
+# macOS Intel
+npm run dist:mac -- --x64
+
+# Windows x64 (instalador y portable)
 npm run dist:win
 ```
 
-Salidas:
-
-- `dist/host/GDW-Mirror-Host-<version>-arm64.zip`
-- `dist/host/GDW-Mirror-Host-<version>-x64.zip` (Intel)
-- `dist/viewer/GDW-Mirror-View-<version>-x64-portable.exe`
-
-### Compilar para Mac Intel
-
-```bash
-npx electron-builder --config builder/host.yml --mac zip --x64
-```
+Todos los artefactos se guardan bajo `dist/dual/`. Para probar la aplicación desde el código ejecuta `npm run dev`.
 
 ### Compilar en otro sistema
 
-- El `.exe` de Windows **se puede compilar desde macOS** (electron-builder descarga el Electron de Windows).
-  Así se generó este proyecto.
-- El `.app` de macOS **solo se puede compilar desde macOS**.
+- El instalador y el ejecutable portable de Windows se pueden compilar desde macOS.
+- Los paquetes de macOS solo se pueden compilar desde macOS.
 
 ### Publicación automática (GitHub Actions)
 
@@ -487,11 +459,11 @@ compila ambas plataformas y publica el release.
 
 ```bash
 # 1. Al empujar un tag
-git tag v0.2.2
-git push origin v0.2.2
+git tag v0.2.3
+git push origin v0.2.3
 
 # 2. Manualmente, indicando el tag
-gh workflow run release.yml -f tag=v0.2.2
+gh workflow run release.yml -f tag=v0.2.3
 ```
 
 **Qué hace:**
@@ -499,8 +471,8 @@ gh workflow run release.yml -f tag=v0.2.2
 | Job | Runner | Acción |
 | --- | --- | --- |
 | `meta` | ubuntu | Lee la versión de `package.json` y deriva el tag |
-| `build-mac` | macos-14 | Compila el host `arm64` y `x64` (Intel), verifica `codesign --deep --strict` |
-| `build-win` | windows-latest | Compila el receptor x64 portable |
+| `build-mac` | macos-14 | Compila y notariza la aplicación dual `arm64` y `x64` (Intel); verifica la firma |
+| `build-win` | windows-latest | Compila la aplicación dual para Windows x64: instalador NSIS y portable |
 | `publish` | ubuntu | Calcula SHA-256 y crea o actualiza el release con `gh` |
 
 El job `publish` es idempotente: si el release ya existe, **reemplaza** los archivos (`--clobber`) en lugar
@@ -511,14 +483,43 @@ de cada versión**.
 > entorno de CI e intenta publicar por su cuenta, fallando con
 > `GitHub Personal Access Token is not set`. La publicación la hace el job final con `gh`.
 
+#### Configurar firma y notarización de macOS en GitHub Actions
+
+El workflow exige estos **Actions secrets** en *Settings → Secrets and variables → Actions*; no los
+incluyas en el repositorio ni los compartas en el chat:
+
+| Secret | Contenido |
+| --- | --- |
+| `MACOS_CSC_LINK` | Archivo `.p12` del certificado **Developer ID Application y su clave privada**, codificado en Base64 en una sola línea. |
+| `MACOS_CSC_KEY_PASSWORD` | Contraseña que protege el archivo `.p12`. |
+| `APPLE_API_KEY_BASE64` | Contenido del archivo `.p8` de App Store Connect, codificado en Base64 en una sola línea. |
+| `APPLE_API_KEY_ID` | Key ID de la API de App Store Connect. |
+| `APPLE_API_ISSUER` | Issuer ID de la API de App Store Connect. |
+
+En Acceso a Llaveros, comprueba que el certificado Developer ID tiene su **clave privada** debajo. Selecciona
+el certificado y la clave privada, y usa **Archivo → Exportar ítems** para guardar un `.p12` protegido por
+contraseña. Si no aparece la clave privada o macOS no permite exportarla, no se podrá firmar en CI con ese
+certificado; habrá que recuperar el llavero original o crear otro certificado con su clave privada.
+
+Crea también una **Team API Key** con rol Developer en App Store Connect y descarga el `.p8` (Apple solo
+permite descargarlo una vez). Codifica localmente los dos archivos, sin subirlos al repositorio:
+
+```bash
+base64 -i "/ruta/segura/DeveloperID.p12" | tr -d '\\n'
+base64 -i "/ruta/segura/AuthKey_KEYID.p8" | tr -d '\\n'
+```
+
+Pega cada resultado directamente en el secret correspondiente de GitHub. El workflow importa el `.p12` en
+un llavero temporal, firma y notariza los builds macOS, sella los DMG y elimina la clave `.p8` temporal al
+final del job. `GDWMirrorNotary` es un perfil de tu llavero local y **no** se usa ni se transfiere a GitHub.
+
 **Para lanzar el workflow sobre la versión actual**, recuerda subir antes el cambio de `version` en
-`package.json`; el tag debe coincidir (`version: 0.2.2` → tag `v0.2.2`).
+`package.json`; el tag debe coincidir (`version: 0.2.3` → tag `v0.2.3`).
 
 ## Desarrollo
 
 ```bash
-npm run dev:host     # host con la ventana del motor visible y devtools
-npm run dev:viewer   # receptor
+npm run dev          # aplicación dual con ventana del motor visible y devtools
 ```
 
 ### Variables de entorno
@@ -540,13 +541,13 @@ npm run dev:viewer   # receptor
 | `MIRROR_BITRATE` | Sobrescribe el bitrate del perfil `high` |
 | `MIRROR_LOG_STATS=1` | Imprime estadísticas del encoder en consola |
 | `MIRROR_AUTOCONNECT=host:puerto:codigo` | El receptor conecta solo |
-| `MIRROR_CUSTOM_FRAME=1` | Fuerza el marco propio de Windows en macOS (para probar) |
+| `MIRROR_CUSTOM_FRAME=1` | Fuerza el marco propio de la ventana en macOS (para probar) |
 
 ### Prueba rápida de humo
 
 ```bash
 # en una terminal
-MIRROR_AUTOSTART=1 npm run host
+MIRROR_AUTOSTART=1 npm start
 
 # en otra
 curl -s http://127.0.0.1:47820/hello
@@ -555,36 +556,35 @@ curl -s http://127.0.0.1:47820/hello
 Respuesta esperada:
 
 ```json
-{"app":"gdwmirror","version":"0.2.2","name":"...","sharing":true,"requireCode":false}
+{"app":"gdwmirror","version":"0.2.3","name":"...","sharing":true,"requireCode":false}
 ```
 
 ## Estructura del proyecto
 
 ```
 src/
-  main.js            selector de modo (host / viewer)
-  entry-host.js      entrypoint empaquetado del host
-  entry-viewer.js    entrypoint empaquetado del receptor
-  host-main.js       barra de estado, panel, señalización HTTP, descubrimiento
+  main.js            inicia el rol predeterminado de la aplicación dual
+  entry-dual.js      entrypoint empaquetado de la aplicación dual
+  host-main.js       bandeja, panel, señalización HTTP y opciones de compartir/visor
   host.html/.js      motor de captura y WebRTC (renderer)
   preload-host.js    puente IPC del motor
   menu.html/.js      popover de la barra de estado con bloques desplegables
   preload-menu.js    puente IPC del popover
   pairing.html       ventana de "Detalles de conexión" (bajo demanda)
   preload-panel.js   puente IPC de esa ventana
-  viewer-main.js     ventana del receptor, descubrimiento, IPC de red
-  viewer.html/.js    UI de conexión y reproducción
-  preload-viewer.js  puente IPC del receptor
-  icons.js           íconos de barra y app generados por código (PNG)
+  viewer-main.js     ventana del visor remoto, descubrimiento e IPC de red
+  viewer.html/.js    interfaz de conexión y reproducción
+  preload-viewer.js  puente IPC del visor
+  icons.js           íconos de bandeja y aplicación
+  assets/            recursos gráficos de la bandeja de Windows
   fit.js             cálculo del encaje de ventana al aspect ratio
   net.js             cliente HTTP y utilidades de red
 builder/
-  host.yml           configuración de empaquetado macOS
-  viewer.yml         configuración de empaquetado Windows
+  dual.yml           configuración de empaquetado para macOS y Windows
   RELEASE-NOTES.md   notas del release (las usa el workflow)
 build/
   icon.png           ícono de la app
-  entitlements.mac.plist  entitlements para la firma ad-hoc
+  entitlements.mac.plist  entitlements para Hardened Runtime y notarización
 .github/
   workflows/release.yml   compilación y publicación automática
 ```
@@ -620,7 +620,7 @@ build/
 
 Los binarios se publican en **GitHub Releases**, no en el repositorio:
 
-- GitHub rechaza archivos de más de **100 MB** en el árbol del repo. El `.zip` del host pesa ~121 MB.
+- GitHub rechaza archivos de más de **100 MB** en el árbol del repo. Los paquetes de la aplicación pueden superar ese límite.
 - Meter binarios de ese tamaño en git haría el clonado lentísimo.
 - Releases acepta hasta 2 GB por archivo y da historial de versiones.
 
@@ -628,19 +628,14 @@ Los binarios se publican en **GitHub Releases**, no en el repositorio:
 
 | Plataforma | Estado | Consecuencia |
 | --- | --- | --- |
-| macOS | **ad-hoc** (sin Developer ID) | `codesign --verify` pasa. La app abre directo si se copia por USB/AirDrop. Descargada del navegador, Gatekeeper la bloquea una vez. |
-| Windows — Microsoft Store | **Firmada** | Instálala desde [Microsoft Store](https://apps.microsoft.com/store/detail/9N4WCWF6CR0B?cid=DevShareMCLPCS); Microsoft distribuye las actualizaciones. |
-| Windows — `.exe` portable de GitHub Releases | **Sin firmar** | SmartScreen puede mostrar un aviso la primera vez. |
+| macOS | **Firmada y notarizada** | Firmada con Developer ID; el ticket está adjunto a la app y al DMG. El ZIP incluye la app notarizada. |
+| Windows — instalador y portable | **Sin firma de código** | SmartScreen puede mostrar un aviso al ejecutar los archivos descargados. |
 
-Verificado: `codesign --verify --deep --strict` devuelve 0 y `Sealed Resources version=2 rules=13 files=10`.
+Verificado en macOS Apple Silicon: `codesign --verify --deep --strict`, `xcrun stapler validate` y Gatekeeper (`spctl --assess`) aceptan la app; el DMG también valida con `stapler`. El ZIP no admite un ticket adjunto directamente, pero contiene la app notarizada.
 
-Para eliminar los avisos definitivamente:
+La firma Developer ID y la notarización de macOS están configuradas para los builds locales. La publicación automática de GitHub Actions aún requiere configurar las credenciales/certificado de firma para CI; Windows requiere aparte su propio certificado de firma de código.
 
-- **macOS:** Developer ID de Apple ($99 USD/año) + notarización.
-- **Windows — `.exe` portable:** para firmar las descargas directas hace falta un certificado de código OV (~$220 USD/año) o EV (~$149–349 USD/año). La versión de Microsoft Store ya está firmada.
-
-Los archivos obtenidos por `git clone`, `curl` o `gh release download` **no llevan cuarentena** y abren sin
-avisos. Solo los descargados por un navegador la llevan.
+Los archivos obtenidos por `git clone`, `curl` o `gh release download` **no llevan cuarentena**; los descargados por un navegador sí pueden llevarla.
 
 ## Hoja de ruta
 
@@ -648,7 +643,8 @@ avisos. Solo los descargados por un navegador la llevan.
 - [x] Reconexión automática limitada tras perder la conexión.
 - [ ] Selección de ventana además de pantalla completa.
 - [ ] Varios receptores simultáneos.
-- [ ] Firma y notarización.
+- [x] Firma y notarización local de macOS; configurar credenciales de firma para GitHub Actions.
+- [ ] Firma de código de Windows.
 - [ ] Build para Windows ARM64.
 - [ ] Control de ganancia de audio (atenuar lo que se envía).
 
@@ -675,27 +671,28 @@ Si llegaste aquí buscando alguna de estas cosas, este es el proyecto:
 
 **En español**
 
-`espejo de pantalla` · `espejo de pantalla mac a windows` · `compartir pantalla de mac en windows` ·
-`ver pantalla de mac en pc` · `mandar pantalla de mac a windows` · `duplicar pantalla mac en windows` ·
-`pantalla extendida mac windows` · `compartir pantalla mac en meet` · `compartir pantalla mac en zoom` ·
+`espejo de pantalla` · `espejo de pantalla mac a windows` · `espejo de pantalla windows a mac` ·
+`compartir pantalla de mac en windows` · `compartir pantalla de windows en mac` ·
+`ver pantalla de mac en pc` · `ver pantalla de windows en mac` · `mandar pantalla de mac a windows` · `mandar pantalla de windows a mac` ·
+`duplicar pantalla mac en windows` · `duplicar pantalla windows en mac` · `compartir pantalla mac en meet` · `compartir pantalla mac en zoom` ·
 `pantalla de mac en obs` · `espejo mac sin cables` · `transmitir pantalla mac a pc por red local` ·
 `alternativa a airplay para windows`
 
 **In English**
 
-`screen mirror` · `screen mirroring` · `mirror screen` · `mirror mac to windows` ·
-`mac screen to windows` · `share mac screen on windows` · `mac to windows screen sharing` ·
-`mac as second screen windows` · `display mirroring` · `screen casting lan` ·
+`screen mirror` · `screen mirroring` · `mirror screen` · `mirror mac to windows` · `mirror windows to mac` ·
+`mac screen to windows` · `windows screen to mac` · `share mac screen on windows` · `share windows screen on mac` · `mac to windows screen sharing` · `windows to mac screen sharing` ·
+`mac as second screen windows` · `windows as second screen mac` · `display mirroring` · `screen casting lan` ·
 `share mac screen in google meet` · `share mac screen in zoom` · `mac screen capture for obs` ·
 `airplay alternative for windows` · `sunshine moonlight alternative for presentations` ·
 `low latency screen mirror lan` · `webrtc screen sharing desktop`
 
 **Técnico**
 
-`macOS a Windows` · `LAN screen mirror` · `WebRTC screen capture` · `ScreenCaptureKit mirror` ·
+`macOS ↔ Windows` · `screen mirroring both ways` · `LAN screen mirror` · `WebRTC screen capture` · `ScreenCaptureKit mirror` ·
 `H.264 screen mirror` · `no drivers screen mirror` · `zero install screen mirror` ·
 `Electron screen mirror app`
 
 > Este proyecto **no** es: control remoto, escritorio remoto (RDP/VNC), streaming de juegos
-> (Moonlight/Parsec), ni AirPlay. Es específicamente un **espejo de pantalla de un solo sentido**,
-> Mac → Windows, para presentar.
+> (Moonlight/Parsec), ni AirPlay. Es un **espejo de pantalla bidireccional** entre macOS y Windows,
+> pensado para presentar y colaborar.

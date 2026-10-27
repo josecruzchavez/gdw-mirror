@@ -15,6 +15,7 @@ let win = null;
 let discSock = null;
 let discTimer = null;
 const hosts = new Map();
+const localName = os.hostname().replace(/\.local$/i, '').replace(/-/g, ' ');
 
 function broadcastAddresses() {
   const list = ['255.255.255.255'];
@@ -104,7 +105,7 @@ function stopDiscovery() {
 }
 
 function createWindow() {
-  const customFrame = process.platform === 'win32' || !!process.env.MIRROR_CUSTOM_FRAME;
+  const customFrame = process.platform === 'win32' || process.platform === 'darwin' || !!process.env.MIRROR_CUSTOM_FRAME;
   const frameOpts = customFrame
     ? {
         frame: false,
@@ -119,7 +120,7 @@ function createWindow() {
     minWidth: 240,
     minHeight: 180,
     backgroundColor: '#0b0c11',
-    title: 'GDW Mirror View',
+    title: 'GDW Mirror',
     show: false,
     ...frameOpts,
     webPreferences: {
@@ -160,7 +161,7 @@ function buildAppMenu() {
     ...(process.platform === 'darwin'
       ? [
           {
-            label: 'GDW Mirror View',
+            label: 'GDW Mirror',
             submenu: [
               { role: 'about' },
               { type: 'separator' },
@@ -189,7 +190,8 @@ function buildAppMenu() {
 }
 
 function viewerStart() {
-  app.setName('GDW Mirror View');
+  process.env.MIRROR_LOCAL_NAME = localName;
+  app.setName('GDW Mirror');
   app.whenReady().then(() => {
     buildAppMenu();
     createWindow();

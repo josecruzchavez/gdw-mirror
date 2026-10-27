@@ -288,7 +288,7 @@ function renderHosts(list) {
     left.appendChild(where);
     const badge = document.createElement('span');
     badge.className = 'badge' + (host.sharing ? ' live' : '');
-    badge.textContent = host.sharing ? 'Compartiendo' : 'Inactivo';
+    badge.textContent = host.sharing ? 'Remoto · compartiendo' : 'Remoto · inactivo';
     btn.appendChild(left);
     btn.appendChild(badge);
     btn.addEventListener('click', () => {
@@ -380,6 +380,8 @@ el('btn-full').addEventListener('click', () => {
   document.body.classList.toggle('fs', active);
   window.mirror.setFullScreen(active);
 });
+const localBadge = el('local-badge');
+if (localBadge && window.mirror.localName) localBadge.textContent = `Este equipo: ${window.mirror.localName}`;
 el('btn-ontop').addEventListener('click', () => {
   const active = !el('btn-ontop').classList.contains('active');
   el('btn-ontop').classList.toggle('active', active);
@@ -398,14 +400,17 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'f' || e.key === 'F') el('btn-full').click();
 });
 
-video.addEventListener('loadedmetadata', () => {
-  el('res').textContent = `${video.videoWidth}×${video.videoHeight}`;
+function fitVideoWindow() {
   const w = video.videoWidth;
   const h = video.videoHeight;
-  if (w && h && window.mirror.fitAspect) {
-    window.mirror.fitAspect(w / h).catch(() => {});
-  }
+  if (w && h && window.mirror.fitAspect) window.mirror.fitAspect(w / h).catch(() => {});
+}
+
+video.addEventListener('loadedmetadata', () => {
+  el('res').textContent = `${video.videoWidth}×${video.videoHeight}`;
+  fitVideoWindow();
 });
+video.addEventListener('resize', fitVideoWindow);
 
 function countFrames() {
   frameCount += 1;

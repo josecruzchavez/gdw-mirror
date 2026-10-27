@@ -1,6 +1,7 @@
 'use strict';
 
 const zlib = require('zlib');
+const path = require('path');
 
 let CRC_TABLE = null;
 
@@ -125,6 +126,13 @@ function appIconPNG(size) {
 }
 
 module.exports = {
+  makeWindowsTray: () => {
+    const { nativeImage } = require('electron');
+    const imagePath = path.join(__dirname, 'assets', 'windows-tray.png');
+    const img = nativeImage.createFromPath(imagePath);
+    if (img.isEmpty()) throw new Error(`No se pudo cargar el icono de Windows: ${imagePath}`);
+    return img.resize({ width: 32, height: 32 });
+  },
   makeMonitor: (scale = 2) => {
     const { nativeImage } = require('electron');
     const img = nativeImage.createFromBuffer(monitorIcon(), { scaleFactor: scale });

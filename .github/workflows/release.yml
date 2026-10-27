@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag a publicar (ej. v0.2.2). Debe existir.'
+        description: 'Tag a publicar / Release tag to publish (ej. v0.2.3)'
         required: true
 
 permissions:
@@ -18,7 +18,7 @@ env:
 
 jobs:
   meta:
-    name: Leer versión
+    name: Leer versión / Read version
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
@@ -28,184 +28,173 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-
-      - name: Obtener versión de package.json
+      - name: Obtener versión / Get version
         id: v
+        env:
+          REQUESTED_TAG: ${{ github.event.inputs.tag }}
         run: |
+          set -euo pipefail
           VERSION=$(node -p "require('./package.json').version")
+          if [[ -n "$REQUESTED_TAG" && "$REQUESTED_TAG" != "v$VERSION" ]]; then
+            echo "Requested tag $REQUESTED_TAG does not match package version v$VERSION." >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Versión detectada: $VERSION"
 
   build-mac:
-    name: Compilar macOS (arm64 + x64)
+    name: macOS dual app (arm64 + x64)
     needs: meta
     runs-on: macos-14
+    environment: production
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-
-      - name: Node
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
-      - name: Instalar dependencias
+      - name: Instalar dependencias / Install dependencies
         run: npm ci
-
-      - name: Compilar host (arm64)
+      - name: Validar secretos de firma / Validate signing secrets
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
-          if [ -n "$CSC_LINK" ]; then
-            echo "Firma: Developer ID (certificado presente)"
-            npx electron-builder --config builder/host.yml --mac zip --publish never --config.mac.identity=""
-          else
-            echo "Firma: ad-hoc (sin certificado)"
-            unset CSC_LINK CSC_KEY_PASSWORD APPLE_API_KEY APPLE_API_KEY_ID APPLE_API_ISSUER
-            CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --config builder/host.yml --mac zip --publish never
+          set -euo pipefail
+          if [[ -z "$CSC_LINK" || -z "$CSC_KEY_PASSWORD" || -z "$APPLE_API_KEY_BASE64" || -z "$APPLE_API_KEY_ID" || -z "$APPLE_API_ISSUER" ]]; then
+            echo "One or more required macOS signing/notarization secrets are missing." >&2
+            exit 1
           fi
-
-      - name: Compilar host (x64 Intel)
+          if ! printf '%s' "$APPLE_API_KEY_BASE64" | base64 -D >/dev/null 2>&1; then
+            echo "APPLE_API_KEY_BASE64 is not valid base64." >&2
+            exit 1
+          fi
+          if ! printf '%s' "$CSC_LINK" | base64 -D >/dev/null 2>&1; then
+            echo "MACOS_CSC_LINK must be the base64-encoded contents of the .p12 file." >&2
+            exit 1
+          fi
+      - name: Preparar clave API de Apple / Prepare Apple API key
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+        run: |
+          set -euo pipefail
+          umask 077
+          CSC_P12_PATH="$RUNNER_TEMP/CSC.p12"
+          printf '%s' "$CSC_LINK" | base64 -D > "$CSC_P12_PATH"
+          test -s "$CSC_P12_PATH"
+          chmod 600 "$CSC_P12_PATH"
+          echo "CSC_LINK=$CSC_P12_PATH" >> "$GITHUB_ENV"
+          KEY_PATH="$RUNNER_TEMP/AuthKey.p8"
+          printf '%s' "$APPLE_API_KEY_BASE64" | base64 -D > "$KEY_PATH"
+          test -s "$KEY_PATH"
+          echo "APPLE_API_KEY=$KEY_PATH" >> "$GITHUB_ENV"
+      - name: Compilar aplicación dual / Build dual app
+        env:
+          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
-          if [ -n "$CSC_LINK" ]; then
-            echo "Firma: Developer ID (certificado presente)"
-            npx electron-builder --config builder/host.yml --mac zip --x64 --publish never --config.mac.identity=""
-          else
-            echo "Firma: ad-hoc (sin certificado)"
-            unset CSC_LINK CSC_KEY_PASSWORD APPLE_API_KEY APPLE_API_KEY_ID APPLE_API_ISSUER
-            CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --config builder/host.yml --mac zip --x64 --publish never
-          fi
-
-      - name: Verificar firma (ambas)
+          npm run dist:mac -- --arm64 --publish never
+          npm run dist:mac -- --x64 --publish never
+      - name: Verificar, notarizar y sellar / Verify, notarize and staple
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
-          find dist/host -maxdepth 2 -name '*.app' -type d -print0 | while IFS= read -r -d '' APP; do
-            echo "App: $APP"
+          set -euo pipefail
+          find dist/dual -maxdepth 3 -name '*.app' -type d -print0 | while IFS= read -r -d '' APP; do
             codesign --verify --deep --strict "$APP"
-            codesign -dv --verbose=2 "$APP" 2>&1 | grep -E 'Signature|Authority' || true
+            xcrun stapler validate "$APP"
+            spctl --assess --verbose=2 --type execute "$APP"
           done
-
-      - name: Subir artefacto
-        uses: actions/upload-artifact@v7
+          for DMG in dist/dual/*.dmg; do
+            xcrun stapler validate "$DMG" || {
+              xcrun notarytool submit "$DMG" --key "$APPLE_API_KEY" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER" --wait
+              xcrun stapler staple "$DMG"
+            }
+            xcrun stapler validate "$DMG"
+          done
+      - name: Eliminar clave API temporal / Remove temporary API key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8" "$RUNNER_TEMP/CSC.p12"
+      - uses: actions/upload-artifact@v7
         with:
-          name: mac
-          path: dist/host/*.zip
+          name: mac-dual
+          path: |
+            dist/dual/*.zip
+            dist/dual/*.dmg
           if-no-files-found: error
           retention-days: 5
 
   build-win:
-    name: Compilar Windows (x64)
+    name: Windows dual app (x64)
     needs: meta
     runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-
-      - name: Node
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
-      - name: Instalar dependencias
+      - name: Instalar dependencias / Install dependencies
         run: npm ci
-
-      - name: Compilar receptor
+      - name: Compilar aplicación dual / Build dual app
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config builder/viewer.yml --win portable --x64 --publish never
-
-      - name: Compilar paquete MSIX (para Microsoft Store)
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config builder/viewer.yml --win appx --x64 --publish never
-
-      - name: Subir artefacto
-        uses: actions/upload-artifact@v7
+        run: npm run dist:win -- --publish never
+      - uses: actions/upload-artifact@v7
         with:
-          name: win
-          path: dist/viewer/*.exe
-          if-no-files-found: error
-          retention-days: 5
-
-      - name: Subir paquete MSIX
-        uses: actions/upload-artifact@v7
-        with:
-          name: win-msix
-          path: |
-            dist/viewer/*.appx
-            dist/viewer/*.msix
+          name: windows-dual
+          path: dist/dual/*.exe
           if-no-files-found: error
           retention-days: 5
 
   publish:
-    name: Publicar release
+    name: Publicar release / Publish release
     needs: [meta, build-mac, build-win]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Descargar artefactos
-        uses: actions/download-artifact@v8
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
-
-      - name: Aplanar y calcular SHA-256
+      - name: Calcular SHA-256 / Calculate SHA-256
         run: |
           mkdir -p out
-          find artifacts -type f \( -name '*.zip' -o -name '*.exe' \) -exec cp {} out/ \;
-          ls -lh out/
+          find artifacts -type f \( -name '*.zip' -o -name '*.dmg' -o -name '*.exe' \) -exec cp {} out/ \;
           cd out
           sha256sum * > SHA256SUMS.txt
-          cat SHA256SUMS.txt
-
-      - name: Crear o actualizar release
+      - name: Crear o actualizar release / Create or update release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.meta.outputs.tag }}
           VERSION: ${{ needs.meta.outputs.version }}
         run: |
           set -e
-          if [ -f builder/RELEASE-NOTES.md ]; then
-            cp builder/RELEASE-NOTES.md notes.md
-          else
-            printf 'Release %s\n' "$VERSION" > notes.md
-          fi
-
+          cp builder/RELEASE-NOTES.md notes.md
           if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "El release $TAG ya existe: se actualizan los archivos."
             gh release upload "$TAG" out/* --clobber
             gh release edit "$TAG" --notes-file notes.md
           else
-            gh release create "$TAG" out/* \
-              --title "GDW Mirror $VERSION" \
-              --notes-file notes.md
+            gh release create "$TAG" out/* --title "GDW Mirror $VERSION" --notes-file notes.md
           fi
-
-      - name: Resumen
+      - name: Resumen / Summary
         env:
           TAG: ${{ needs.meta.outputs.tag }}
         run: |
           {
-            echo "## Release $TAG publicado"
+            echo "## Release $TAG publicado / published"
             echo ""
-            echo "| Archivo | Tamaño |"
+            echo "| Archivo / File | Tamaño / Size |"
             echo "| --- | --- |"
             for f in out/*; do
               printf '| `%s` | %s |\n' "$(basename "$f")" "$(du -h "$f" | cut -f1)"

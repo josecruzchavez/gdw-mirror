@@ -1,10 +1,8 @@
-name: Build MSIX
+name: Build Windows dual app
 
-# Compila únicamente el paquete MSIX (.appx) del receptor para subirlo a la
-# Microsoft Store. No publica ningún release: solo deja el paquete como
-# artefacto descargable.
-#
-# Uso: pestaña Actions → "Build MSIX" → Run workflow.
+# Compila el instalador y la versión portable de la aplicación dual para Windows.
+# Build the Windows installer and portable version of the dual-role app.
+# Uso / Usage: Actions → "Build Windows dual app" → Run workflow.
 
 on:
   workflow_dispatch:
@@ -16,35 +14,27 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  build-msix:
-    name: Compilar MSIX (x64)
+  build-windows:
+    name: Compilar aplicación dual (x64) / Build dual app (x64)
     runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Node
-        uses: actions/setup-node@v7
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
-      - name: Instalar dependencias
+      - name: Instalar dependencias / Install dependencies
         run: npm ci
-
-      - name: Compilar paquete MSIX
+      - name: Compilar / Build
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config builder/viewer.yml --win appx --x64 --publish never
-
-      - name: Listar paquetes generados
+        run: npm run dist:win -- --publish never
+      - name: Listar artefactos / List artifacts
         shell: pwsh
-        run: Get-ChildItem -Recurse dist/viewer -Filter *.appx | Select-Object FullName, Length
-
-      - name: Subir paquete MSIX
-        uses: actions/upload-artifact@v7
+        run: Get-ChildItem -Recurse dist/dual -Filter *.exe | Select-Object FullName, Length
+      - uses: actions/upload-artifact@v7
         with:
-          name: GDW-Mirror-View-msix
-          path: dist/viewer/*.appx
+          name: GDW-Mirror-Windows-dual
+          path: dist/dual/*.exe
           if-no-files-found: error
           retention-days: 14

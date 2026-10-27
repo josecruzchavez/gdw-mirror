@@ -1,36 +1,36 @@
 # GDW Mirror
 
-> Screen mirroring from macOS to Windows over the local network, at native resolution. No remote control, no drivers, no installed services, no cloud, no accounts. Share your Mac's screen in Meet, Zoom or OBS from a Windows PC. Electron app with two parts: GDW Mirror Host (macOS menu bar) and GDW Mirror View (Windows portable .exe). By José Cruz Chávez.
+> Espejo de pantalla entre macOS y Windows por red local, en cualquier dirección pero un sentido a la vez. Una sola aplicación dual permite compartir la pantalla local o abrir el visor remoto desde la barra de estado o la bandeja. Sin control remoto, drivers, servicios, nube ni cuentas. / Screen mirroring between macOS and Windows over the local network, in either direction but one way at a time. One dual-role app lets you share the local screen or open the remote viewer from the menu bar or system tray. No remote control, drivers, services, cloud, or accounts. By José Cruz Chávez.
 
-- [README.md](README.md): Full documentation in Spanish (primary README).
+- [README.md](README.md): Documentación completa en español.
 - [README.en.md](README.en.md): Full documentation in English.
-- [LICENSE](LICENSE): Proprietary, all rights reserved. Personal consultation and use only; no commercial redistribution without written permission.
+- [LICENSE](LICENSE): Proprietary; personal consultation and use only.
 - [package.json](package.json): Project metadata, npm scripts, keywords.
-- [builder/host.yml](builder/host.yml): electron-builder config for the macOS host (zip + dmg, ad-hoc signed).
-- [builder/viewer.yml](builder/viewer.yml): electron-builder config for the Windows viewer (portable .exe + zip + MSIX for the Microsoft Store).
+- [builder/dual.yml](builder/dual.yml): Packaging configuration for macOS and Windows dual app.
 
 ## Source code
 
-- [src/main.js](src/main.js): Entry point that selects host vs viewer mode from `--mode`.
-- [src/host-main.js](src/host-main.js): Menu bar, panel, HTTP signaling, LAN discovery (macOS host main process).
-- [src/host.js](src/host.js): Capture engine and WebRTC (host renderer).
-- [src/menu.js](src/menu.js): Menu bar popover with collapsible blocks.
-- [src/viewer-main.js](src/viewer-main.js): Receiver window, discovery, network IPC (Windows main process).
-- [src/viewer.js](src/viewer.js): Connection UI and playback (viewer renderer).
-- [src/icons.js](src/icons.js): Menu bar and app icons generated in code (PNG).
+- [src/main.js](src/main.js): Entry point for the default host/tray role.
+- [src/entry-dual.js](src/entry-dual.js): Packaged dual-app entry point.
+- [src/host-main.js](src/host-main.js): System tray, panel, HTTP signaling, LAN discovery, and share/view actions.
+- [src/host.js](src/host.js): Screen capture engine and WebRTC.
+- [src/menu.js](src/menu.js): Tray popover with sharing and remote-viewer controls.
+- [src/viewer-main.js](src/viewer-main.js): Remote viewer window, discovery, and network IPC.
+- [src/viewer.js](src/viewer.js): Connection UI and playback.
+- [src/icons.js](src/icons.js): Tray and app icons.
 - [src/fit.js](src/fit.js): Window aspect-ratio fitting calculation.
 - [src/net.js](src/net.js): HTTP client and network utilities.
 
 ## Key facts
 
 - Architecture: Electron, WebRTC (DTLS-SRTP transport), ScreenCaptureKit capture on macOS, H.264 encoding.
-- Transport: HTTP signaling on LAN + WebRTC P2P media. No relay servers, no telemetry.
+- Transport: HTTP signaling on LAN + WebRTC P2P media. No relay servers or telemetry.
 - Quality profiles: Sharp (30 fps, 60 Mbps), Smooth (60 fps, 80 Mbps), High (90 fps, 100 Mbps), Eco (30 fps, 12 Mbps).
 - Requirements: macOS 13 Ventura+ (Apple Silicon or Intel), Windows 10/11 x64, same LAN.
 - Security: pairing code off by default; 8 failures from one IP block for 30 seconds when enabled.
-- Distribution: GitHub Releases (binaries), Homebrew cask (`josecruzchavez/gdw` tap), winget, Microsoft Store (MSIX).
+- Distribution: GitHub Releases (macOS ZIP/DMG and Windows installer/portable app).
 
 ## CI/CD
 
-- [.github/workflows/release.yml](.github/workflows/release.yml): Builds macOS (arm64 + x64) and Windows, computes SHA-256, publishes GitHub Release on tag push.
-- [.github/workflows/build-msix.yml](.github/workflows/build-msix.yml): Manual workflow to build only the MSIX package for the Microsoft Store.
+- [.github/workflows/release.yml](.github/workflows/release.yml): Builds the dual app for macOS (arm64 + x64) and Windows, computes SHA-256, and publishes GitHub Releases on tag push.
+- [.github/workflows/build-msix.yml](.github/workflows/build-msix.yml): Manual build of the Windows dual app installer and portable executable.

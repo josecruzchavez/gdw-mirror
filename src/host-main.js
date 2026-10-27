@@ -5,6 +5,7 @@ const {
   systemPreferences, dialog, shell, powerSaveBlocker, clipboard,
 } = require('electron');
 const http = require('http');
+const { spawn } = require('child_process');
 const dgram = require('dgram');
 const os = require('os');
 const path = require('path');
@@ -98,8 +99,9 @@ let sleepBlocker = null;
 let rebuildTimer = null;
 const failures = new Map();
 
-const ICON_IDLE = icons.makeMonitor();
-const ICON_LIVE = icons.makeLive();
+const WINDOWS_TRAY_ICON = process.platform === 'win32' ? icons.makeWindowsTray() : null;
+const ICON_IDLE = WINDOWS_TRAY_ICON || icons.makeMonitor();
+const ICON_LIVE = WINDOWS_TRAY_ICON || icons.makeLive();
 
 function prettyHost() {
   return os
@@ -199,11 +201,10 @@ function rebuildMenu() {
   if (process.platform === 'darwin') {
     tray.setTitle(st.sharing && st.video ? `${st.video.width}×${st.video.height}` : '');
   }
-  if (process.platform === 'darwin') {
-    pushMenuState();
-  } else {
-    tray.setContextMenu(Menu.buildFromTemplate(buildMenuTemplate()));
-  }
+  // Use the same custom menu on macOS and Windows so controls do not close
+  // unexpectedly after each native menu selection.
+  pushMenuState();
+  if (tray && process.platform !== 'darwin') tray.setContextMenu(null);
 }
 
 function statusLabel() {
@@ -300,10 +301,10 @@ function buildMenuTemplate() {
     click: (item) => setLoginItem(item.checked),
   });
   if (process.platform === 'darwin') {
+    template.push({ type: 'separator' });
     template.push({
       label: 'Permisos de grabación de pantalla…',
-      click: () =>
-        shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'),
+      click: () => shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'),
     });
   }
   template.push({ type: 'separator' });
@@ -741,6 +742,24 @@ function startDiscovery() {
   });
 }
 
+function openViewer() {
+  if (st.sharing || st.starting) {
+    dialog.showMessageBox({
+      type: 'info',
+      buttons: ['Aceptar'],
+      message: 'Detén la compartición antes de ver una pantalla remota.',
+    });
+    return;
+  }
+  const env = { ...process.env, MIRROR_MODE: 'viewer', MIRROR_CUSTOM_FRAME: '1' };
+  const child = spawn(process.execPath, [app.getAppPath(), '--mode=viewer'], {
+    detached: true,
+    stdio: 'ignore',
+    env,
+  });
+  child.unref();
+}
+
 function wireIpc() {
   ipcMain.on('engine:offer', (_e, payload) => {
     if (!payload || !payload.sdp) return;
@@ -809,6 +828,10 @@ function wireIpc() {
         if (st.sharing) stopSharing();
         else startSharing();
         break;
+      case 'open-viewer':
+        hideMenu();
+        openViewer();
+        break;
       case 'set-profile':
         if (!PROFILES[msg.value]) break;
         st.profile = msg.value;
@@ -865,12 +888,8 @@ function wireIpc() {
 
 function createTray() {
   tray = new Tray(ICON_IDLE);
-  if (process.platform === 'darwin') {
-    tray.on('click', () => toggleMenu());
-    tray.on('right-click', () => showMenu());
-  } else {
-    tray.on('double-click', () => openPanel());
-  }
+  tray.on('click', () => toggleMenu());
+  tray.on('right-click', () => showMenu());
   rebuildMenu();
 }
 

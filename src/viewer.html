@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <title>GDW Mirror View</title>
+    <title>GDW Mirror</title>
     <style>
       :root { color-scheme: dark; }
       * { box-sizing: border-box; }
@@ -54,6 +54,10 @@
       }
       h1 { font-size: 18px; margin: 0 0 4px; font-weight: 600; letter-spacing: -0.3px; }
       .sub { color: #8b93ab; font-size: 13px; margin-bottom: 20px; }
+      .identity { display: inline-flex; margin: -8px 0 16px; padding: 4px 9px; border: 1px solid #2a3550; border-radius: 999px; color: #a9c0f0; background: rgba(43, 108, 246, 0.1); font-size: 11px; }
+      .local-action { margin-top: auto; padding-top: 18px; border-top: 1px solid #1d212c; }
+      .tray-hint { color: #8b93ab; font-size: 12px; line-height: 1.6; padding: 10px 12px; border: 1px solid #252c3d; border-radius: 10px; background: rgba(43, 108, 246, 0.08); }
+      .tray-hint b { color: #cbd8f5; font-weight: 600; }
 
       .hosts { display: flex; flex-direction: column; gap: 8px; }
       .host {
@@ -210,13 +214,17 @@
     <div id="connect">
       <div id="dragbar"></div>
       <section class="pane">
-        <h1>Equipos en la red</h1>
-        <div class="sub">Macs con GDW Mirror disponibles en tu red local.</div>
+        <h1>Equipos remotos</h1>
+        <div class="sub">Equipos con GDW Mirror disponibles en tu red local.</div>
+        <div class="identity" id="local-badge">Este equipo</div>
         <div class="hosts" id="hosts">
           <div class="empty">Buscando equipos…</div>
         </div>
+        <div class="local-action">
+          <div class="tray-hint">Para compartir una de tus pantallas, abre el menú del icono de GDW Mirror en la barra de estado de macOS o en la bandeja del sistema de Windows y selecciona <b>Compartir pantalla</b>.</div>
+        </div>
         <div class="credits">
-          <div class="credits-title">GDW Mirror View</div>
+          <div class="credits-title">GDW Mirror</div>
           <div class="credits-text">
             Desarrollado por <a href="https://josecruzchavez.com" target="_blank" rel="noreferrer">José Cruz Chávez</a>
             con asistencia de IA, para compartir la pantalla de una Mac en llamadas y conferencias desde Windows a

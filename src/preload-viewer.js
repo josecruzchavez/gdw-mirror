@@ -20,4 +20,5 @@ contextBridge.exposeInMainWorld('mirror', {
   onMaximized: (cb) => ipcRenderer.on('win:maximized', (_e, on) => cb(!!on)),
   customFrame: process.platform === 'win32' || !!process.env.MIRROR_CUSTOM_FRAME,
   quit: () => ipcRenderer.send('win:quit'),
+  localName: process.env.MIRROR_LOCAL_NAME || null,
 });

@@ -1,8 +1,8 @@
 {
   "name": "gdw-mirror",
-  "productName": "GDW Mirror Host",
-  "version": "0.2.2",
-  "description": "Espejo de pantalla (screen mirror) macOS → Windows por LAN. Comparte la pantalla de tu Mac en Meet, Zoom u OBS desde una PC, a resolución nativa. Sin control remoto, sin servicios, sin drivers.",
+  "productName": "GDW Mirror",
+  "version": "0.2.3",
+  "description": "Espejo de pantalla entre macOS y Windows, un sentido a la vez. / Screen mirroring between macOS and Windows, one direction at a time.",
   "keywords": [
     "screen-mirror",
     "screen-mirroring",
@@ -37,14 +37,10 @@
   "main": "src/main.js",
   "private": true,
   "scripts": {
-    "host": "electron . --mode=host",
-    "viewer": "electron . --mode=viewer",
-    "dev:host": "electron . --mode=host --dev",
-    "dev:viewer": "electron . --mode=viewer --dev",
-    "dist:mac": "electron-builder --config builder/host.yml --mac zip",
-    "dist:mac:dmg": "electron-builder --config builder/host.yml --mac dmg",
-    "dist:win": "electron-builder --config builder/viewer.yml --win portable --x64",
-    "dist:win:zip": "electron-builder --config builder/viewer.yml --win zip --x64"
+    "start": "electron . --mode=host",
+    "dev": "electron . --mode=host --dev",
+    "dist:mac": "electron-builder --config builder/dual.yml --mac dmg zip",
+    "dist:win": "electron-builder --config builder/dual.yml --win nsis portable --x64"
   },
   "author": "José Cruz Chávez <https://josecruzchavez.com>",
   "license": "SEE LICENSE IN LICENSE",

@@ -1,0 +1,50 @@
+appId: mx.gdw.mirror
+productName: GDW Mirror
+copyright: Copyright © 2026 José Cruz Chávez · GDW · https://gdw.mx
+
+directories:
+  output: dist/dual
+  buildResources: build
+
+files:
+  - package.json
+  - src/**/*
+
+extraMetadata:
+  main: src/entry-dual.js
+  description: "Espejo de pantalla entre macOS y Windows, un sentido a la vez. / Screen mirroring between macOS and Windows, one direction at a time."
+
+asar: true
+
+mac:
+  category: public.app-category.utilities
+  icon: build/icon.png
+  identity: 'Developer ID Application'
+  forceCodeSigning: true
+  notarize: true
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  target:
+    - dmg
+    - zip
+  extendInfo:
+    LSUIElement: true
+    NSHighResolutionCapable: true
+
+win:
+  icon: build/icon.png
+  target:
+    - nsis
+    - portable
+
+nsis:
+  artifactName: GDW-Mirror-${version}-${arch}-setup.${ext}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+
+portable:
+  artifactName: GDW-Mirror-${version}-${arch}-portable.exe
+
+artifactName: GDW-Mirror-${version}-${arch}.${ext}

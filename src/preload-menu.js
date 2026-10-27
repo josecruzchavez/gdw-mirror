@@ -8,4 +8,5 @@ contextBridge.exposeInMainWorld('menu', {
   resize: (height) => ipcRenderer.send('menu:resize', height),
   hide: () => ipcRenderer.send('menu:hide'),
   ready: () => ipcRenderer.send('menu:ready'),
+  platform: process.platform,
 });

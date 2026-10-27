@@ -85,6 +85,8 @@ let lastSig = null;
 
 function updateLive(s) {
   el('name').textContent = s.hostName || 'GDW Mirror';
+  el('view').disabled = !!(s.sharing || s.starting);
+  el('view').textContent = 'Ver pantalla remota';
   el('dot').className = 'dot' + (s.sharing ? (s.peerConnected ? ' ok' : ' live') : '');
 
   const status = el('status');
@@ -260,8 +262,13 @@ function reportHeight() {
 }
 
 el('share').addEventListener('click', () => window.menu.action({ type: 'toggle-share' }));
+el('view').addEventListener('click', () => window.menu.action({ type: 'open-viewer' }));
 el('login').addEventListener('click', () => window.menu.action({ type: 'toggle-login' }));
-el('perm').addEventListener('click', () => window.menu.action({ type: 'permissions' }));
+if (window.menu.platform === 'darwin') {
+  el('perm').addEventListener('click', () => window.menu.action({ type: 'permissions' }));
+} else {
+  el('perm').style.display = 'none';
+}
 el('quit').addEventListener('click', () => window.menu.action({ type: 'quit' }));
 
 document.addEventListener('keydown', (e) => {

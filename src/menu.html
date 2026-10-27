@@ -55,6 +55,17 @@
         text-align: center;
       }
       .primary:hover { background: #3d79f8; }
+      .secondary {
+        display: block;
+        width: calc(100% - 8px);
+        margin: -3px 4px 10px;
+        padding: 8px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        color: #c9d0e2;
+        text-align: center;
+      }
+      .secondary:hover { background: rgba(255, 255, 255, 0.07); }
       .primary.stop { background: #c0392b; }
       .primary.stop:hover { background: #d0483a; }
       .primary[disabled] { opacity: 0.55; }
@@ -121,6 +132,7 @@
       <div class="stats" id="stats"></div>
 
       <button class="primary" id="share">Compartir pantalla</button>
+      <button class="secondary" id="view">Ver pantalla remota</button>
 
       <div id="blocks"></div>
 
