@@ -40,7 +40,8 @@
     "start": "electron . --mode=host",
     "dev": "electron . --mode=host --dev",
     "dist:mac": "electron-builder --config builder/dual.yml --mac dmg zip",
-    "dist:win": "electron-builder --config builder/dual.yml --win nsis portable --x64"
+    "dist:win": "electron-builder --config builder/dual.yml --win portable --x64",
+    "dist:win:store": "electron-builder --config builder/store.yml --win appx --x64"
   },
   "author": "José Cruz Chávez <https://josecruzchavez.com>",
   "license": "SEE LICENSE IN LICENSE",

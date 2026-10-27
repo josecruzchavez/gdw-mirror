@@ -153,8 +153,8 @@ jobs:
         run: npm run dist:win -- --publish never
       - uses: actions/upload-artifact@v7
         with:
-          name: windows-dual
-          path: dist/dual/*.exe
+          name: windows-portable
+          path: dist/dual/*-portable.exe
           if-no-files-found: error
           retention-days: 5
 

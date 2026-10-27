@@ -1,0 +1,39 @@
+name: Build Windows portable
+
+# Builds only the portable Windows executable, without an NSIS installer.
+# Usage: Actions → "Build Windows portable" → Run workflow.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build-windows:
+    name: Build GDW Mirror portable (x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build portable app
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run dist:win -- --publish never
+      - name: List portable artifacts
+        shell: pwsh
+        run: Get-ChildItem -Recurse dist/dual -Filter *-portable.exe | Select-Object FullName, Length
+      - uses: actions/upload-artifact@v7
+        with:
+          name: GDW_Mirror-Windows-portable
+          path: dist/dual/*-portable.exe
+          if-no-files-found: error
+          retention-days: 14

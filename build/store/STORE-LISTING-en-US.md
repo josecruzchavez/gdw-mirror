@@ -1,4 +1,4 @@
-# GDW Mirror View — Store listing (en-US)
+# GDW Mirror — Store listing (en-US)
 
 Textos listos para copiar y pegar en Partner Center. Los campos van en orden.
 
@@ -7,7 +7,7 @@ Textos listos para copiar y pegar en Partner Center. Los campos van en orden.
 ## Nombre del producto
 
 ```
-GDW Mirror View
+GDW Mirror
 ```
 
 ---
@@ -15,25 +15,19 @@ GDW Mirror View
 ## Descripción
 
 ```
-GDW Mirror View is the Windows half of GDW Mirror, a screen mirror that shows
-your Mac's screen on a Windows PC over the local network — at full native
-resolution, with zero cables, zero drivers, zero accounts and zero cloud.
+GDW Mirror connects macOS and Windows computers over the local network to
+share and view screens in either direction. One app for both roles, with zero
+cables, zero drivers, zero accounts and zero cloud.
 
-You pair it with GDW Mirror Host, a free macOS app that lives in the menu bar.
-The Mac captures its screen and sends it directly to this Windows app over
-WebRTC; nothing ever leaves your local network. No relay servers, no
-telemetry, no sign-up.
+Connections use WebRTC directly between the computers; nothing ever leaves
+your local network. No relay servers, no telemetry, no sign-up.
 
 WHY YOU WANT THIS
 
-If you present in Google Meet, Zoom or Microsoft Teams from a Windows PC but
-your slides, demos and content live on a Mac, GDW Mirror puts the Mac's screen
-on the PC so you can share the window or route it through OBS as a clean
-1080p60 virtual camera.
-
-It is not remote control, and it is not game streaming. It is a one-way,
-low-latency screen mirror built specifically for presenting: your Mac shows up
-on Windows, and its mouse and keyboard are never touched.
+If you present in Google Meet, Zoom or Microsoft Teams, GDW Mirror lets you
+view the other computer's screen or share this computer's screen for viewing
+on the other one. It is designed for low-latency presentations, not remote
+control or game streaming.
 
 WHAT YOU GET
 
@@ -47,12 +41,12 @@ WHAT YOU GET
 
 REQUIREMENTS
 
-• This Windows app (GDW Mirror View) and GDW Mirror Host running on a Mac
-  (macOS 13 Ventura or later, Apple Silicon or Intel).
+• GDW Mirror for Windows x64 and macOS 13 Ventura or later (Apple Silicon
+  or Intel).
 • Both machines on the same local network.
 • Windows 10 x64 or Windows 11 x64.
 
-GDW Mirror Host is free and available at https://mirror.gdw.mx
+More information: https://mirror.gdw.mx
 ```
 
 ---
@@ -73,7 +67,7 @@ Automatic discovery on the local network
 Optional 6-digit pairing code
 Zero cloud — everything stays on your LAN
 Zero accounts and zero telemetry
-Portable, lightweight Windows receiver
+One app to share or view screens
 Works with Meet, Zoom, Teams and OBS
 Frameless auto-resizing window
 Live latency, bitrate and fps overlay
@@ -84,9 +78,8 @@ Live latency, bitrate and fps overlay
 ## Descripción corta (máx. 270 caracteres)
 
 ```
-See your Mac's screen on a Windows PC over the local network, at native
-resolution. Zero cables, zero drivers, zero cloud. For presenting in Meet,
-Zoom or Teams. Pair with the free GDW Mirror Host for macOS.
+Share and view screens between macOS and Windows over your local network.
+Low latency, no cables, drivers, accounts or cloud. One app for both roles.
 ```
 
 ---

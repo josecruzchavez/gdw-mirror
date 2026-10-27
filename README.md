@@ -134,13 +134,12 @@ portable, el `.exe` de Windows:
 | --- | --- |
 | `GDW-Mirror-<version>-arm64.zip` y `.dmg` | Mac con Apple Silicon |
 | `GDW-Mirror-<version>-x64.zip` y `.dmg` | Mac con Intel |
-| `GDW-Mirror-<version>-x64-setup.exe` | Windows (instalador) |
 | `GDW-Mirror-<version>-x64-portable.exe` | Windows (portable) |
 
 > **Aviso de seguridad.** La aplicación para macOS está firmada con Developer ID y notarizada por Apple;
 > el `.dmg` también lleva el ticket de notarización adjunto. No debería requerir los pasos de apertura de
-> una app no identificada que se describen en tutoriales antiguos. El instalador y el portable de Windows
-> no están firmados con un certificado de Windows, por lo que SmartScreen puede mostrar un aviso.
+> una app no identificada que se describen en tutoriales antiguos. El portable de Windows no está firmado
+> con un certificado de Windows, por lo que SmartScreen puede mostrar un aviso.
 
 #### macOS
 
@@ -157,9 +156,9 @@ portable, el `.exe` de Windows:
 
 #### Windows
 
-Descarga el instalador `GDW-Mirror-<version>-x64-setup.exe` o la versión portable `GDW-Mirror-<version>-x64-portable.exe` desde GitHub Releases. El instalador permite elegir la carpeta; la versión portable no requiere instalación.
+Descarga `GDW-Mirror-<version>-x64-portable.exe` desde GitHub Releases. No requiere instalación.
 
-1. Ejecuta el instalador o copia el `.exe` portable donde quieras.
+1. Copia el `.exe` portable donde quieras y ejecútalo.
 2. Si aparece **"Windows protegió tu PC"**: pulsa **Más información** → **Ejecutar de todos modos**.
 3. La primera vez, Windows preguntará si permitir la app en redes privadas → **Permitir** (necesario para descubrir equipos).
 
@@ -439,15 +438,20 @@ npm run dist:mac
 # macOS Intel
 npm run dist:mac -- --x64
 
-# Windows x64 (instalador y portable)
+# Windows x64 (portable)
 npm run dist:win
+
+# Paquete Windows para Microsoft Store (.appx / MSIX)
+npm run dist:win:store
 ```
 
-Todos los artefactos se guardan bajo `dist/dual/`. Para probar la aplicación desde el código ejecuta `npm run dev`.
+El portable se guarda bajo `dist/dual/`; el paquete de Microsoft Store se guarda bajo `dist/store/`.
+Para probar la aplicación desde el código ejecuta `npm run dev`.
 
 ### Compilar en otro sistema
 
-- El instalador y el ejecutable portable de Windows se pueden compilar desde macOS.
+- El ejecutable portable de Windows se puede compilar desde macOS.
+- El paquete MSIX de Microsoft Store se compila en Windows mediante GitHub Actions.
 - Los paquetes de macOS solo se pueden compilar desde macOS.
 
 ### Publicación automática (GitHub Actions)
@@ -472,8 +476,12 @@ gh workflow run release.yml -f tag=v0.2.3
 | --- | --- | --- |
 | `meta` | ubuntu | Lee la versión de `package.json` y deriva el tag |
 | `build-mac` | macos-14 | Compila y notariza la aplicación dual `arm64` y `x64` (Intel); verifica la firma |
-| `build-win` | windows-latest | Compila la aplicación dual para Windows x64: instalador NSIS y portable |
+| `build-win` | windows-latest | Compila la aplicación para Windows x64 en formato portable |
 | `publish` | ubuntu | Calcula SHA-256 y crea o actualiza el release con `gh` |
+
+Para generar manualmente el portable usa **Actions → Build Windows portable**. Para generar el paquete
+que se carga en Partner Center usa **Actions → Build MSIX for Microsoft Store**; descarga el artefacto
+`GDW_Mirror-MSIX` y sube su `.appx`. La Store firma el paquete durante el proceso de publicación.
 
 El job `publish` es idempotente: si el release ya existe, **reemplaza** los archivos (`--clobber`) en lugar
 de fallar. Las notas salen de [`builder/RELEASE-NOTES.md`](builder/RELEASE-NOTES.md) — **actualízalo antes
@@ -629,7 +637,8 @@ Los binarios se publican en **GitHub Releases**, no en el repositorio:
 | Plataforma | Estado | Consecuencia |
 | --- | --- | --- |
 | macOS | **Firmada y notarizada** | Firmada con Developer ID; el ticket está adjunto a la app y al DMG. El ZIP incluye la app notarizada. |
-| Windows — instalador y portable | **Sin firma de código** | SmartScreen puede mostrar un aviso al ejecutar los archivos descargados. |
+| Windows — portable | **Sin firma de código** | SmartScreen puede mostrar un aviso al ejecutar el archivo descargado. |
+| Windows — Microsoft Store | **Firmado por Microsoft Store** | La Store firma el paquete durante el proceso de publicación. |
 
 Verificado en macOS Apple Silicon: `codesign --verify --deep --strict`, `xcrun stapler validate` y Gatekeeper (`spctl --assess`) aceptan la app; el DMG también valida con `stapler`. El ZIP no admite un ticket adjunto directamente, pero contiene la app notarizada.
 

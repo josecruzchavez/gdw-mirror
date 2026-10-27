@@ -16,7 +16,6 @@ Comparte la pantalla entre equipos macOS y Windows con una sola aplicación dual
 | --- | --- |
 | `GDW-Mirror-0.2.3-arm64.zip` / `.dmg` | macOS Apple Silicon |
 | `GDW-Mirror-0.2.3-x64.zip` / `.dmg` | macOS Intel |
-| `GDW-Mirror-0.2.3-x64-setup.exe` | Windows x64, instalador |
 | `GDW-Mirror-0.2.3-x64-portable.exe` | Windows x64, portable |
 
 ## Firma y seguridad
@@ -36,7 +35,6 @@ GDW Mirror is one dual-role app for macOS and Windows. From the menu bar or syst
 | --- | --- |
 | `GDW-Mirror-0.2.3-arm64.zip` / `.dmg` | macOS Apple Silicon |
 | `GDW-Mirror-0.2.3-x64.zip` / `.dmg` | macOS Intel |
-| `GDW-Mirror-0.2.3-x64-setup.exe` | Windows x64 installer |
 | `GDW-Mirror-0.2.3-x64-portable.exe` | Windows x64 portable |
 
 The macOS app is signed with Developer ID and notarized by Apple. The DMG has the notarization ticket stapled; the ZIP contains the notarized app. Windows is not signed with a code-signing certificate, so SmartScreen may show a warning. Allow the app through private-network firewall prompts so local device discovery can work.

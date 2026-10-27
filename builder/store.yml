@@ -1,0 +1,37 @@
+appId: mx.gdw.mirror
+productName: GDW Mirror
+copyright: Copyright © 2026 José Cruz Chávez · GDW · https://gdw.mx
+
+directories:
+  output: dist/store
+  buildResources: build
+
+files:
+  - package.json
+  - src/**/*
+
+extraMetadata:
+  main: src/entry-dual.js
+  description: "Espejo de pantalla entre macOS y Windows, un sentido a la vez. / Screen mirroring between macOS and Windows, one direction at a time."
+
+asar: true
+
+win:
+  icon: build/icon.png
+  target:
+    - appx
+
+appx:
+  applicationId: GDWMirror
+  identityName: JosCruzChvez.GDWMirrorView
+  publisher: CN=0711A566-87BA-4116-8D0A-B2E7DB8586BF
+  publisherDisplayName: José Cruz Chávez
+  displayName: GDW Mirror
+  backgroundColor: "#08080a"
+  capabilities:
+    - runFullTrust
+    - privateNetworkClientServer
+  minVersion: 10.0.17763.0
+  addAutoLaunchExtension: false
+
+artifactName: GDW_Mirror-${version}-${arch}.${ext}

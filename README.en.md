@@ -133,12 +133,11 @@ version, the Windows `.exe`:
 | --- | --- |
 | `GDW-Mirror-<version>-arm64.zip` / `.dmg` | Mac (Apple Silicon) |
 | `GDW-Mirror-<version>-x64.zip` / `.dmg` | Mac (Intel) |
-| `GDW-Mirror-<version>-x64-setup.exe` | Windows x64 installer |
 | `GDW-Mirror-<version>-x64-portable.exe` | Windows x64 portable |
 
 > **Security notice.** The macOS app is signed with Developer ID and notarized by Apple; the `.dmg` also
 > has its notarization ticket stapled. It should not require the steps for opening an unidentified app found
-> in older guides. The Windows installer and portable executable are not signed with a Windows certificate,
+> in older guides. The Windows portable executable is not signed with a Windows certificate,
 > so SmartScreen may show a warning.
 
 #### macOS
@@ -156,9 +155,9 @@ version, the Windows `.exe`:
 
 #### Windows
 
-Download `GDW-Mirror-<version>-x64-setup.exe` or the portable `GDW-Mirror-<version>-x64-portable.exe` from GitHub Releases. The installer lets you choose an install folder; the portable build needs no installation.
+Download `GDW-Mirror-<version>-x64-portable.exe` from GitHub Releases. It does not need installation.
 
-1. Run the installer or copy the portable `.exe` wherever you like.
+1. Copy the portable `.exe` wherever you like and run it.
 2. If **"Windows protected your PC"** appears: click **More info** → **Run anyway**.
 3. Allow the app on private networks when prompted so local device discovery can work.
 
@@ -436,15 +435,20 @@ npm run dist:mac
 # macOS Intel
 npm run dist:mac -- --x64
 
-# Windows x64 (installer and portable)
+# Windows x64 (portable)
 npm run dist:win
+
+# Windows Microsoft Store package (.appx / MSIX)
+npm run dist:win:store
 ```
 
-All artifacts are written under `dist/dual/`. To run the dual-role app from source, use `npm run dev`.
+The portable executable is written under `dist/dual/`; the Microsoft Store package is written under
+`dist/store/`. To run the app from source, use `npm run dev`.
 
 ### Building on another operating system
 
-- The Windows installer and portable executable can be built from macOS.
+- The Windows portable executable can be built from macOS.
+- The Microsoft Store MSIX package is built on Windows using GitHub Actions.
 - macOS packages can only be built on macOS.
 
 ### Automatic publishing (GitHub Actions)
@@ -469,8 +473,12 @@ gh workflow run release.yml -f tag=v0.2.3
 | --- | --- | --- |
 | `meta` | ubuntu | Reads the version from `package.json` and derives the tag |
 | `build-mac` | macos-14 | Builds and notarizes the dual-role app for Apple Silicon and Intel; verifies its signature |
-| `build-win` | windows-latest | Builds the dual-role installer and portable executable for x64 |
+| `build-win` | windows-latest | Builds the portable Windows executable for x64 |
 | `publish` | ubuntu | Computes SHA-256 and creates or updates the release with `gh` |
+
+To build a portable executable manually, use **Actions → Build Windows portable**. To create the package
+for Partner Center, use **Actions → Build MSIX for Microsoft Store**, download the `GDW_Mirror-MSIX`
+artifact, and upload its `.appx` file. The Store signs the package during publication.
 
 The `publish` job is idempotent: if the release already exists, it **replaces** the files (`--clobber`)
 instead of failing. Notes come from [`builder/RELEASE-NOTES.md`](builder/RELEASE-NOTES.md) — **update it
@@ -626,7 +634,8 @@ Binaries are published in **GitHub Releases**, not the repository:
 | Platform | Status | Consequence |
 | --- | --- | --- |
 | macOS | **Signed and notarized** | Signed with Developer ID; the ticket is stapled to the app and DMG. The ZIP contains the notarized app. |
-| Windows — installer and portable app | **Unsigned** | SmartScreen may show a warning when downloaded files are run. |
+| Windows — portable app | **Unsigned** | SmartScreen may show a warning when the downloaded file is run. |
+| Windows — Microsoft Store | **Signed by Microsoft Store** | The Store signs the package during publication. |
 
 Verified on Apple Silicon macOS: `codesign --verify --deep --strict`, `xcrun stapler validate`, and Gatekeeper (`spctl --assess`) accept the app; the DMG also validates with `stapler`. A ZIP cannot have a ticket stapled directly, but contains the notarized app.
 

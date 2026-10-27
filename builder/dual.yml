@@ -35,14 +35,7 @@ mac:
 win:
   icon: build/icon.png
   target:
-    - nsis
     - portable
-
-nsis:
-  artifactName: GDW-Mirror-${version}-${arch}-setup.${ext}
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  perMachine: false
 
 portable:
   artifactName: GDW-Mirror-${version}-${arch}-portable.exe
