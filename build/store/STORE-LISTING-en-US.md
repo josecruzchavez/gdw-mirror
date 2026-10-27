@@ -15,36 +15,43 @@ GDW Mirror
 ## Descripción
 
 ```
-GDW Mirror connects macOS and Windows computers over the local network to
-share and view screens in either direction. One app for both roles, with zero
-cables, zero drivers, zero accounts and zero cloud.
+GDW Mirror lets you share a screen between a Mac and a Windows PC over your
+local network. Install the same app on both computers: either one can share
+its screen for the other to view, one direction at a time. GDW Mirror mirrors
+the image; it does not control the other computer's mouse or keyboard.
 
-Connections use WebRTC directly between the computers; nothing ever leaves
-your local network. No relay servers, no telemetry, no sign-up.
+The connection uses WebRTC directly between the computers. Your screen stays
+on your local network: no cloud, relay servers, accounts, or installed
+services. Devices are discovered automatically, with manual IP connection
+available when network discovery is blocked.
 
 WHY YOU WANT THIS
 
-If you present in Google Meet, Zoom or Microsoft Teams, GDW Mirror lets you
-view the other computer's screen or share this computer's screen for viewing
-on the other one. It is designed for low-latency presentations, not remote
-control or game streaming.
+Keep your meeting or presentation on one computer and show content from the
+other. For example, present a Mac's screen on a Windows PC running Google
+Meet, Zoom, Microsoft Teams, or OBS—or share the Windows screen for viewing
+on a Mac. The receiving computer displays the stream in a frameless window
+that adjusts to the incoming screen's aspect ratio.
 
 WHAT YOU GET
 
-• Native resolution — a 4K Mac sends 3840×2160, not upscaled 1080p.
-• Frame rates matched to the panel (30, 60 or 90 fps).
-• Optional system audio behind a single toggle, with no virtual audio driver.
-• Automatic discovery of the Mac on your LAN — no typing IPs.
+• Native-resolution screen capture, with optional scaling to reduce bandwidth.
+• Frame-rate profiles up to 90 fps, adapted to the display and hardware.
+• Automatic codec negotiation, preferring AV1 or HEVC when both computers support them.
+• Optional Mac system audio, without a virtual audio driver.
+• Automatic discovery on your local network, with manual IP connection as a fallback.
 • Optional 6-digit pairing code for trusted networks.
-• A frameless window that resizes itself to the incoming signal's aspect ratio.
-• Live overlay with resolution, fps, bitrate and latency.
+• Automatic reconnection after temporary network interruptions.
+• Live overlay showing resolution, fps, bitrate, and latency.
+
+GDW Mirror is for screen sharing and presenting—not remote control or game
+streaming. No mouse or keyboard input is sent to the other computer.
 
 REQUIREMENTS
 
-• GDW Mirror for Windows x64 and macOS 13 Ventura or later (Apple Silicon
-  or Intel).
-• Both machines on the same local network.
-• Windows 10 x64 or Windows 11 x64.
+• Windows 10 or Windows 11 (x64).
+• A Mac running macOS 13 Ventura or later (Apple Silicon or Intel) with GDW Mirror.
+• Both computers on the same local network.
 
 More information: https://mirror.gdw.mx
 ```
@@ -60,17 +67,19 @@ More information: https://mirror.gdw.mx
 ## Características del producto (bullets, máx. 20)
 
 ```
-Native resolution, up to 4K
-Frame rates matched to your panel (30/60/90 fps)
-Optional system audio, no virtual drivers
-Automatic discovery on the local network
+Share screens between Windows and macOS
+Either computer can share its screen
+Native capture with optional scaling
+Frame-rate profiles up to 90 fps
+Automatic AV1/HEVC codec negotiation
+Optional Mac system audio, no virtual driver
+Automatic local-network discovery
+Manual IP connection available
 Optional 6-digit pairing code
-Zero cloud — everything stays on your LAN
-Zero accounts and zero telemetry
-One app to share or view screens
-Works with Meet, Zoom, Teams and OBS
-Frameless auto-resizing window
-Live latency, bitrate and fps overlay
+Automatic reconnection after interruptions
+Frameless, auto-resizing viewer window
+Live resolution, fps, bitrate and latency
+No remote control, cloud, or accounts
 ```
 
 ---
@@ -78,8 +87,8 @@ Live latency, bitrate and fps overlay
 ## Descripción corta (máx. 270 caracteres)
 
 ```
-Share and view screens between macOS and Windows over your local network.
-Low latency, no cables, drivers, accounts or cloud. One app for both roles.
+Share screens between Windows and macOS over your local network, in either
+direction. Native capture, automatic discovery, no remote control or cloud.
 ```
 
 ---

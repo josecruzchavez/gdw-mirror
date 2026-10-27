@@ -15,36 +15,43 @@ GDW Mirror
 ## Descripción
 
 ```
-GDW Mirror conecta equipos macOS y Windows por la red local para compartir y
-ver pantallas en ambas direcciones. Una sola app para ambos roles, sin cables,
-sin drivers, sin cuentas y sin nube.
+GDW Mirror permite compartir la pantalla entre una Mac y una PC con Windows
+por la red local. Instala la misma app en ambos equipos: cualquiera puede
+compartir su pantalla para que el otro la vea, en un solo sentido a la vez.
+GDW Mirror transmite la imagen; no controla el ratón ni el teclado del otro equipo.
 
-La conexión usa WebRTC directamente entre los equipos; nada sale de tu red
-local. Sin servidores intermedios, sin telemetría, sin registros.
+La conexión usa WebRTC directamente entre los equipos. La pantalla permanece
+en tu red local: sin nube, servidores intermedios, cuentas ni servicios
+instalados. Los equipos se descubren automáticamente; si la red bloquea el
+descubrimiento, puedes conectarte mediante la dirección IP.
 
 POR QUÉ LA QUERRÁS
 
-Si presentas en Google Meet, Zoom o Microsoft Teams, GDW Mirror te permite
-mostrar la pantalla del otro equipo o compartir la pantalla de este equipo
-para verla desde el otro. Está pensado para presentar con baja latencia, no
-para controlar remotamente el otro equipo ni para streaming de juegos.
+Mantén la videollamada o presentación en un equipo y muestra el contenido del
+otro. Por ejemplo, presenta la pantalla de una Mac en una PC con Windows que
+ejecuta Google Meet, Zoom, Microsoft Teams u OBS; también puedes compartir la
+pantalla de Windows para verla en una Mac. El equipo receptor muestra la
+transmisión en una ventana sin marco que se ajusta al formato de la pantalla.
 
 QUÉ OBTIENES
 
-• Resolución nativa: una Mac 4K envía 3840×2160, no 1080p reescalado.
-• Fotogramas ajustados al panel (30, 60 o 90 fps).
-• Audio del sistema opcional tras un solo interruptor, sin driver de audio virtual.
-• Detección automática de la Mac en tu LAN: sin escribir IPs.
-• Código de emparejamiento opcional de 6 dígitos para redes de confianza.
-• Una ventana sin marco que se redimensiona sola al formato de la señal.
-• Superposición en vivo con resolución, fps, bitrate y latencia.
+• Captura a resolución nativa, con escalado opcional para reducir el uso de red.
+• Perfiles de hasta 90 fps, adaptados a la pantalla y al hardware.
+• Negociación automática de códec; prioriza AV1 o HEVC si ambos equipos los admiten.
+• Audio del sistema opcional al compartir desde una Mac, sin driver virtual.
+• Detección automática en la red local y conexión manual por IP como alternativa.
+• Código de emparejamiento opcional de 6 dígitos.
+• Reconexión automática después de interrupciones temporales de red.
+• Indicadores en vivo de resolución, fps, bitrate y latencia.
+
+GDW Mirror es para compartir pantalla y presentar, no para control remoto ni
+streaming de juegos. No envía movimientos del ratón ni del teclado al otro equipo.
 
 REQUISITOS
 
-• GDW Mirror para Windows x64 y macOS 13 Ventura o posterior (Apple Silicon
-  o Intel).
+• Windows 10 o Windows 11 (x64).
+• Una Mac con macOS 13 Ventura o posterior (Apple Silicon o Intel) y GDW Mirror.
 • Ambos equipos en la misma red local.
-• Windows 10 x64 o Windows 11 x64.
 
 Más información: https://mirror.gdw.mx
 ```
@@ -60,17 +67,19 @@ Más información: https://mirror.gdw.mx
 ## Características del producto (bullets, máx. 20)
 
 ```
-Resolución nativa, hasta 4K
-Fotogramas ajustados a tu panel (30/60/90 fps)
-Audio del sistema opcional, sin drivers virtuales
+Comparte pantallas entre Windows y macOS
+Cualquiera de los equipos puede compartir
+Captura nativa con escalado opcional
+Perfiles de hasta 90 fps
+Negociación automática de códecs AV1/HEVC
+Audio opcional de Mac, sin driver virtual
 Detección automática en la red local
-Código de emparejamiento opcional de 6 dígitos
-Cero nube: todo se queda en tu LAN
-Sin cuentas y sin telemetría
-Una sola app para compartir o ver pantallas
-Funciona con Meet, Zoom, Teams y OBS
-Ventana sin marco que se redimensiona sola
-Superposición en vivo de latencia, bitrate y fps
+Conexión manual por dirección IP
+Código de emparejamiento opcional
+Reconexión automática ante interrupciones
+Ventana receptora sin marco y adaptable
+Indicadores de resolución, fps, bitrate y latencia
+Sin control remoto, nube ni cuentas
 ```
 
 ---
@@ -78,8 +87,8 @@ Superposición en vivo de latencia, bitrate y fps
 ## Descripción corta (máx. 270 caracteres)
 
 ```
-Comparte y ve pantallas entre macOS y Windows por la red local. Baja latencia,
-sin cables, drivers, cuentas ni nube. Una sola app para ambos roles.
+Comparte pantallas entre Windows y macOS por la red local, en ambas
+direcciones. Captura nativa, detección automática y sin control remoto ni nube.
 ```
 
 ---
