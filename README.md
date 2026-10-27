@@ -135,7 +135,7 @@ portable, el `.exe` de Windows:
 | `GDW-Mirror-<version>-arm64.zip` y `.dmg` | Mac con Apple Silicon |
 | `GDW-Mirror-<version>-x64.zip` y `.dmg` | Mac con Intel |
 | `GDW-Mirror-<version>-x64-portable.exe` | Windows (portable, sin firma) |
-| [GDW Mirror View en Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-ES&gl=MX) | Windows (versión firmada) |
+| [GDW Mirror View en Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-MX&gl=MX) | Windows (versión firmada) |
 
 > **Aviso de seguridad.** La aplicación para macOS está firmada con Developer ID y notarizada por Apple;
 > el `.dmg` también lleva el ticket de notarización adjunto. No debería requerir los pasos de apertura de
@@ -157,7 +157,7 @@ portable, el `.exe` de Windows:
 
 #### Windows
 
-Para la versión firmada, instala **[GDW Mirror View desde Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-ES&gl=MX)**; Microsoft gestiona las actualizaciones. También puedes descargar `GDW-Mirror-<version>-x64-portable.exe` desde GitHub Releases. El ejecutable portable no está firmado y SmartScreen puede mostrar un aviso.
+Para la versión firmada, instala **[GDW Mirror View desde Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-MX&gl=MX)**; Microsoft gestiona las actualizaciones. También puedes descargar `GDW-Mirror-<version>-x64-portable.exe` desde GitHub Releases. El ejecutable portable no está firmado y SmartScreen puede mostrar un aviso.
 
 1. Copia el `.exe` portable donde quieras y ejecútalo.
 2. Si aparece **"Windows protegió tu PC"**: pulsa **Más información** → **Ejecutar de todos modos**.

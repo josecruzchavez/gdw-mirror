@@ -134,7 +134,7 @@ version, the Windows `.exe`:
 | `GDW-Mirror-<version>-arm64.zip` / `.dmg` | Mac (Apple Silicon) |
 | `GDW-Mirror-<version>-x64.zip` / `.dmg` | Mac (Intel) |
 | `GDW-Mirror-<version>-x64-portable.exe` | Windows x64 portable (unsigned) |
-| [GDW Mirror View on Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-ES&gl=MX) | Windows (signed version) |
+| [GDW Mirror View on Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-MX&gl=MX) | Windows (signed version) |
 
 > **Security notice.** The macOS app is signed with Developer ID and notarized by Apple; the `.dmg` also
 > has its notarization ticket stapled. It should not require the steps for opening an unidentified app found
@@ -156,7 +156,7 @@ version, the Windows `.exe`:
 
 #### Windows
 
-For the signed version, install **[GDW Mirror View from Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-ES&gl=MX)**; Microsoft manages its updates. You can also download `GDW-Mirror-<version>-x64-portable.exe` from GitHub Releases. The portable executable is unsigned, so SmartScreen may show a warning.
+For the signed version, install **[GDW Mirror View from Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-MX&gl=MX)**; Microsoft manages its updates. You can also download `GDW-Mirror-<version>-x64-portable.exe` from GitHub Releases. The portable executable is unsigned, so SmartScreen may show a warning.
 
 1. Copy the portable `.exe` wherever you like and run it.
 2. If **"Windows protected your PC"** appears: click **More info** → **Run anyway**.
