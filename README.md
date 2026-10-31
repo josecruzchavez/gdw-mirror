@@ -8,6 +8,8 @@ Sin control remoto, sin gamepads, sin drivers, sin servicios instalados, sin nub
 
 - **Una sola aplicación dual** para macOS y Windows: cualquiera de los equipos puede compartir su pantalla y el otro recibirla, en un solo sentido a la vez. Se ejecuta desde la barra de estado o la bandeja e incluye el visor remoto.
 
+**Precio:** GDW Mirror es gratis para descargar y usar; no requiere suscripción ni pago. Las donaciones son opcionales y no desbloquean funciones. Consulta [LICENSE](LICENSE) para los términos de uso.
+
 > **This document is also available in English:** [README.en.md](README.en.md)
 
 ---

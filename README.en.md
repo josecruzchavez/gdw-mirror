@@ -8,6 +8,8 @@ No remote control, no gamepads, no drivers, no installed services, no cloud, no 
 
 - **One dual-role app** for macOS and Windows: either computer can share its screen for the other to view, one direction at a time. It runs from the menu bar/system tray and includes the remote viewer.
 
+**Price:** GDW Mirror is free to download and use; no payment or subscription is required. Donations are optional and do not unlock features. See [LICENSE](LICENSE) for usage terms.
+
 > **Este documento también está disponible en español:** [README.md](README.md)
 
 ---
