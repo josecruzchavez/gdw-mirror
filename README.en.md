@@ -203,11 +203,23 @@ when you click outside, with `Esc`, or by clicking the icon again.
 | **Screen to share** | Which monitor to share. Never two at once. |
 | **Quality profile** | Sharp (30 fps, 60 Mbps) · Smooth (60 fps, 80 Mbps) · High (90 fps, 100 Mbps) · Eco (30 fps, 12 Mbps) |
 | **Sent resolution** | Native · Scaled to half · Scaled to 1080p |
+| **Dock effect (macOS)** | Optional: use Scale while sharing and restore the previous effect when sharing stops |
 | **System audio** | Include audio or not. Can be toggled live. |
 | **Connection** | Require a 6-digit code (off by default) and see details. |
 | **About** | Author, description, and links. |
 
 In the footer: *Open at login*, *Screen recording permissions…* and *Quit GDW Mirror*.
+
+On macOS, the **Genie** minimize animation may look paused on the receiving computer even when the rest of
+the stream is smooth. **Dock effect → Use Scale while sharing** temporarily changes the Dock's global
+minimize effect; Scale often makes that animation look smoother. The option is off by default and restores
+the previous effect when sharing stops or the app quits. macOS restarts the Dock when applying each change,
+which may cause a brief flicker. If the app exits unexpectedly, GDW Mirror attempts to restore the saved
+effect the next time it starts.
+
+macOS does not provide a **no animation** minimize effect through this Dock setting, so there is no supported
+option to remove both Genie and Scale. Disabling animations through Accessibility is a broader system setting
+and is not changed by GDW Mirror.
 
 ### 2. On Windows
 
@@ -248,10 +260,12 @@ only contains what the Mac plays, not your voice.
 
 ### What is prioritized
 
-Resolution. The video track is marked `contentHint = "detail"` and the encoder uses
-`degradationPreference = "maintain-resolution"`: if the network tightens, **fps drop before resolution**.
-There is no rescaling in the path; what the screen produces is what's sent (unless you explicitly choose a
-scaled *Sent resolution*).
+The **Sharp** profile prioritizes resolution: it uses `contentHint = "detail"` and
+`degradationPreference = "maintain-resolution"`, so fps drop before resolution when constrained.
+**Smooth** prioritizes motion with `contentHint = "motion"` and
+`degradationPreference = "maintain-framerate"`; if needed, the encoder may further reduce resolution to
+sustain fps. These are priorities, not guarantees: capture and hardware still limit actual fps. There is
+no rescaling in the path except the scaling you explicitly choose under *Sent resolution*.
 
 ### About fps and ProMotion
 

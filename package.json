@@ -1,7 +1,7 @@
 {
   "name": "gdw-mirror",
   "productName": "GDW Mirror",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Espejo de pantalla entre macOS y Windows, un sentido a la vez. / Screen mirroring between macOS and Windows, one direction at a time.",
   "keywords": [
     "screen-mirror",

@@ -9,6 +9,8 @@ const { spawn } = require('child_process');
 const dgram = require('dgram');
 const os = require('os');
 const path = require('path');
+const fs = require('fs');
+const { promisify } = require('util');
 
 const icons = require('./icons');
 const { localIPv4 } = require('./net');
@@ -17,6 +19,7 @@ const HTTP_PORT = Number(process.env.MIRROR_HTTP_PORT || 47820);
 const DISC_PORT = Number(process.env.MIRROR_DISC_PORT || 47821);
 const VERSION = require('../package.json').version;
 const DEV = process.argv.includes('--dev');
+const execFileAsync = promisify(require('child_process').execFile);
 
 const PROFILES = {
   sharp: {
@@ -32,8 +35,8 @@ const PROFILES = {
     label: 'Fluido · 60 fps · hasta 80 Mbps',
     fps: 60,
     maxBitrate: 80000000,
-    contentHint: 'detail',
-    degradation: 'maintain-resolution',
+    contentHint: 'motion',
+    degradation: 'maintain-framerate',
   },
   high: {
     key: 'high',
@@ -78,6 +81,7 @@ const st = {
   requireCode: !!process.env.MIRROR_REQUIRE_CODE,
   profile: PROFILES[process.env.MIRROR_PROFILE] ? process.env.MIRROR_PROFILE : 'sharp',
   scaleMode: process.env.MIRROR_SCALE || 'native',
+  genieScale: false,
   code: null,
   offer: null,
   video: null,
@@ -97,6 +101,8 @@ let discSock = null;
 let pendingSource = null;
 let sleepBlocker = null;
 let rebuildTimer = null;
+let originalDockEffect = null;
+let quitAfterDockRestore = false;
 const failures = new Map();
 
 const WINDOWS_TRAY_ICON = process.platform === 'win32' ? icons.makeWindowsTray() : null;
@@ -152,6 +158,72 @@ function scaleLabel(key) {
   return found ? found.label.split(' · ')[0] : key;
 }
 
+function dockEffectRecoveryPath() {
+  return path.join(app.getPath('userData'), 'dock-effect-recovery.json');
+}
+
+async function restartDock() {
+  await execFileAsync('/usr/bin/osascript', ['-e', 'tell application "Dock" to quit']);
+}
+
+async function restoreDockEffect() {
+  if (process.platform !== 'darwin' || !originalDockEffect) return;
+  const saved = originalDockEffect;
+  try {
+    if (saved.value === null) {
+      await execFileAsync('/usr/bin/defaults', ['delete', 'com.apple.dock', 'mineffect']).catch((err) => {
+        if (err.code !== 1) throw err;
+      });
+    } else {
+      await execFileAsync('/usr/bin/defaults', ['write', 'com.apple.dock', 'mineffect', '-string', saved.value]);
+    }
+    await restartDock();
+    if (fs.existsSync(dockEffectRecoveryPath())) fs.unlinkSync(dockEffectRecoveryPath());
+    originalDockEffect = null;
+  } catch (err) {
+    st.error = `No se pudo restaurar el efecto original del Dock. Revisa Ajustes del Sistema → Escritorio y Dock. ${err.message}`;
+    dialog.showErrorBox('No se pudo restaurar el Dock', st.error);
+  }
+}
+
+async function setDockScaleEffect() {
+  if (process.platform !== 'darwin' || originalDockEffect) return;
+  const markerPath = dockEffectRecoveryPath();
+  let value = null;
+  try {
+    const result = await execFileAsync('/usr/bin/defaults', ['read', 'com.apple.dock', 'mineffect']);
+    value = result.stdout.trim();
+  } catch (err) {
+    if (err.code !== 1) throw err;
+  }
+
+  const saved = { value: value || null };
+  fs.mkdirSync(path.dirname(markerPath), { recursive: true });
+  fs.writeFileSync(markerPath, JSON.stringify(saved), { mode: 0o600 });
+  originalDockEffect = saved;
+
+  try {
+    await execFileAsync('/usr/bin/defaults', ['write', 'com.apple.dock', 'mineffect', '-string', 'scale']);
+    await restartDock();
+  } catch (err) {
+    await restoreDockEffect();
+    throw err;
+  }
+}
+
+async function recoverDockEffect() {
+  if (process.platform !== 'darwin') return;
+  const markerPath = dockEffectRecoveryPath();
+  if (!fs.existsSync(markerPath)) return;
+  try {
+    originalDockEffect = JSON.parse(fs.readFileSync(markerPath, 'utf8'));
+    await restoreDockEffect();
+  } catch (err) {
+    st.error = `No se pudo recuperar el efecto anterior del Dock: ${err.message}`;
+    dialog.showErrorBox('Revisa el efecto del Dock', st.error);
+  }
+}
+
 function menuPayload() {
   const displays = displayList();
   const current = displays.find((d) => d.id === (st.displayId != null ? st.displayId : screen.getPrimaryDisplay().id));
@@ -173,6 +245,7 @@ function menuPayload() {
     scaleMode: st.scaleMode,
     scaleLabel: scaleLabel(st.scaleMode),
     scales: SCALES,
+    genieScale: st.genieScale,
     displayId: current ? current.id : null,
     displayValue: current ? current.short : '—',
     displays: displays.map((d) => ({ id: d.id, label: d.short })),
@@ -259,6 +332,29 @@ function buildMenuTemplate() {
       },
     })),
   });
+  if (process.platform === 'darwin') {
+    template.push({
+      label: 'Usar efecto Escala mientras comparte',
+      type: 'checkbox',
+      checked: st.genieScale,
+      click: (item) => {
+        st.genieScale = item.checked;
+        if (st.sharing && st.genieScale) {
+          setDockScaleEffect().catch((err) => {
+            st.genieScale = false;
+            st.error = `No se pudo activar el efecto Escala: ${err.message}`;
+            dialog.showErrorBox('No se pudo cambiar el efecto del Dock', st.error);
+            rebuildMenu();
+            pushPanelState();
+          });
+        } else if (st.sharing) {
+          restoreDockEffect();
+        }
+        rebuildMenu();
+        pushPanelState();
+      },
+    });
+  }
   template.push({
     label: 'Resolución enviada',
     submenu: [
@@ -434,6 +530,7 @@ async function startSharing() {
   pushPanelState();
 
   try {
+    if (st.genieScale) await setDockScaleEffect();
     await ensureEngine();
     const sources = await desktopCapturer.getSources({ types: ['screen'], thumbnailSize: { width: 0, height: 0 } });
     const wanted = st.displayId != null ? String(st.displayId) : null;
@@ -467,6 +564,7 @@ async function startSharing() {
       capture,
     });
   } catch (err) {
+    await restoreDockEffect();
     st.starting = false;
     st.error = err && err.message ? err.message : String(err);
     rebuildMenu();
@@ -489,6 +587,7 @@ async function stopSharing(options) {
     powerSaveBlocker.stop(sleepBlocker);
     sleepBlocker = null;
   }
+  await restoreDockEffect();
   if (!silent) st.error = null;
   rebuildMenu();
   pushPanelState();
@@ -844,6 +943,23 @@ function wireIpc() {
         if (st.sharing) restartSharing();
         else rebuildMenu();
         break;
+      case 'toggle-genie-scale':
+        if (process.platform !== 'darwin') break;
+        st.genieScale = !st.genieScale;
+        if (st.sharing && st.genieScale) {
+          setDockScaleEffect().catch((err) => {
+            st.genieScale = false;
+            st.error = `No se pudo activar el efecto Escala: ${err.message}`;
+            dialog.showErrorBox('No se pudo cambiar el efecto del Dock', st.error);
+            rebuildMenu();
+            pushPanelState();
+          });
+        } else if (st.sharing) {
+          restoreDockEffect();
+        }
+        rebuildMenu();
+        pushPanelState();
+        break;
       case 'set-display':
         st.displayId = msg.value;
         if (st.sharing) restartSharing();
@@ -897,7 +1013,9 @@ function hostStart() {
   app.setName('GDW Mirror');
   if (process.platform === 'darwin' && app.dock) app.dock.hide();
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
+    await recoverDockEffect();
+
     session.defaultSession.setDisplayMediaRequestHandler(
       (_request, callback) => {
         if (!pendingSource) return callback({});
@@ -922,7 +1040,12 @@ function hostStart() {
     app.on('window-all-closed', () => {
       // App vive en la barra de estado: no cerrar al cerrar ventanas.
     });
-    app.on('before-quit', () => {
+    app.on('before-quit', (event) => {
+      if (originalDockEffect && !quitAfterDockRestore) {
+        event.preventDefault();
+        quitAfterDockRestore = true;
+        stopSharing().finally(() => app.quit());
+      }
       app.isQuitting = true;
       if (httpServer) httpServer.close();
       if (discSock) {

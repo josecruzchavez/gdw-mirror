@@ -130,6 +130,7 @@ function render(s) {
     s.displays,
     s.profile,
     s.scaleMode,
+    s.genieScale,
     s.requireCode,
     s.code,
     s.audio,
@@ -186,6 +187,22 @@ function render(s) {
       });
     })
   );
+
+  if (window.menu.platform === 'darwin') {
+    box.appendChild(
+      block('dock-effect', 'Efecto del Dock', s.genieScale ? 'Escala al compartir' : 'Original', (inner) => {
+        inner.appendChild(
+          switchRow(
+            'genie-scale',
+            'Usar Escala al compartir',
+            s.genieScale,
+            { type: 'toggle-genie-scale' },
+            'Aladino (Genie) puede verse pausado al transmitirlo; Escala suele verse más fluido. macOS no ofrece aquí “Sin efecto”. El cambio es global y se restaura al detener la transmisión.'
+          )
+        );
+      })
+    );
+  }
 
   box.appendChild(
     block('audio', 'Audio del sistema', s.audio ? 'activado' : 'desactivado', (inner) => {

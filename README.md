@@ -199,11 +199,23 @@ El panel es un popover propio, **no un menú nativo**: al elegir una opción **p
 cambiar varias cosas seguidas sin reabrirlo. Cada bloque se queda desplegado hasta que lo cierres. Se cierra
 al hacer clic fuera, con `Esc`, o al volver a pulsar el ícono.
 
+En macOS, la animación **Aladino (Genie)** al minimizar puede verse pausada en el equipo receptor, aunque
+el resto de la transmisión vaya fluida. **Efecto del Dock → Usar Escala al compartir** cambia temporalmente
+el efecto global de minimizar; Escala suele hacer esa animación más fluida. La opción está desactivada por
+defecto y restaura el efecto anterior al detener la transmisión o salir de la aplicación. macOS reinicia el
+Dock al aplicar cada cambio, por lo que puede haber un breve parpadeo. Si la aplicación termina
+inesperadamente, GDW Mirror intenta restaurar el efecto guardado la próxima vez que se inicia.
+
+macOS no ofrece un efecto de minimizar **sin animación** mediante este ajuste del Dock, así que no hay una
+opción compatible para quitar tanto Aladino como Escala. Desactivar animaciones con opciones de accesibilidad
+es un ajuste más amplio del sistema y no lo modifica GDW Mirror.
+
 | Bloque | Qué controla |
 | --- | --- |
 | **Pantalla a compartir** | Cuál monitor compartir. Nunca se comparten dos a la vez. |
 | **Perfil de calidad** | Nítido (30 fps, 60 Mbps) · Fluido (60 fps, 80 Mbps) · Alto (90 fps, 100 Mbps) · Económico (30 fps, 12 Mbps) |
 | **Resolución enviada** | Nativa · Escalada a la mitad · Escalada a 1080p |
+| **Efecto del Dock (macOS)** | Opcional: usar Escala mientras comparte y restaurar el efecto anterior al detener |
 | **Audio del sistema** | Incluir o no el audio. Se puede cambiar en caliente. |
 | **Conexión** | Requerir código de 6 dígitos (desactivado por defecto) y ver los detalles. |
 | **Acerca de** | Autor, descripción y enlaces. |
@@ -252,10 +264,13 @@ solo contiene lo que reproduce la Mac, no tu voz.
 
 ### Qué se prioriza
 
-La resolución. La pista de video se marca con `contentHint = "detail"` y el encoder usa
-`degradationPreference = "maintain-resolution"`: si la red aprieta, **bajan los fps antes que la
-resolución**. No hay reescalado en el camino; se envía lo que la pantalla produce (salvo que elijas
-explícitamente *Resolución enviada* escalada).
+El perfil **Nítido** prioriza la resolución: usa `contentHint = "detail"` y
+`degradationPreference = "maintain-resolution"`, por lo que, si hay limitaciones, bajan los fps antes
+que la resolución. **Fluido** prioriza el movimiento con `contentHint = "motion"` y
+`degradationPreference = "maintain-framerate"`; si hace falta, el encoder puede reducir aún más la
+resolución para sostener los fps. Estos valores son prioridades, no garantías: la captura y el hardware
+siguen limitando los fps reales. No hay reescalado en el camino salvo el que elijas explícitamente en
+*Resolución enviada*.
 
 ### Sobre los fps y ProMotion
 
@@ -355,8 +370,7 @@ GDW Mirror (Mac)                           GDW Mirror (Windows)
   (`WebRtcHideLocalIpsWithMdns`), porque Windows sin Bonjour no puede resolver `.local` y la conexión
   fallaría.
 - **Códecs**: el Host prefiere AV1 → HEVC/H.265 → H.264 → VP9 → VP8 según sus capacidades. WebRTC negocia
-  solo los códecs compatibles con ambos equipos; si AV1 o HEVC no están disponibles en el receptor, usa
-  una alternativa compatible.
+  solo los códecs compatibles con ambos equipos.
 - **Reconexión**: ante una desconexión temporal, el receptor espera 3 segundos y reintenta hasta 6 veces,
   con pausas de 1,5 segundos. Si no logra reconectar, muestra un aviso para volver a conectar manualmente.
 

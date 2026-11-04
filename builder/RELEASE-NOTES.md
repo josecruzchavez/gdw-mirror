@@ -1,14 +1,12 @@
-# GDW Mirror 0.2.3
+# GDW Mirror 0.2.4
 
 Comparte la pantalla entre equipos macOS y Windows con una sola aplicación dual, conectada por la red local.
 
-## Novedades en 0.2.3
+## Novedades en 0.2.4
 
-- **Una sola aplicación para ambos roles:** desde la barra de estado o bandeja puedes compartir la pantalla local o abrir el visor remoto.
-- En Windows, el visor remoto se abre cuando se solicita y permite compartir la pantalla de ese equipo.
-- **Reconexión automática** ante desconexiones temporales, con aviso cuando se agotan los intentos.
-- **Códecs de video:** prioridad a AV1 y HEVC cuando ambos equipos los admiten, manteniendo alternativas compatibles.
-- Aplicación disponible para macOS Apple Silicon/Intel y Windows x64.
+- En macOS, opción para usar temporalmente el efecto **Escala** del Dock al compartir y restaurar después el efecto original. Puede ayudar a que la animación Genie/Aladino se vea más fluida en el receptor.
+- El perfil **Fluido** ahora prioriza mantener los fps cuando el encoder debe adaptarse.
+- La opción del efecto del Dock está desactivada por defecto; cambiarla reinicia brevemente el Dock.
 
 ## Versión firmada para Windows
 
@@ -18,9 +16,9 @@ También puedes instalar **[GDW Mirror View desde Microsoft Store](https://apps.
 
 | Archivo | Plataforma |
 | --- | --- |
-| `GDW-Mirror-0.2.3-arm64.zip` / `.dmg` | macOS Apple Silicon |
-| `GDW-Mirror-0.2.3-x64.zip` / `.dmg` | macOS Intel |
-| `GDW-Mirror-0.2.3-x64-portable.exe` | Windows x64, portable |
+| `GDW-Mirror-0.2.4-arm64.zip` / `.dmg` | macOS Apple Silicon |
+| `GDW-Mirror-0.2.4-x64.zip` / `.dmg` | macOS Intel |
+| `GDW-Mirror-0.2.4-x64-portable.exe` | Windows x64, portable |
 
 ## Firma y seguridad
 
@@ -30,18 +28,13 @@ La aplicación de macOS se firma con Developer ID y se notariza con Apple. El DM
 
 For the signed Windows version, install **GDW Mirror View** from [Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-MX&gl=MX). The Store version is signed and updated by Microsoft. The portable `.exe` in this release is a separate, unsigned download.
 
-GDW Mirror is one dual-role app for macOS and Windows. From the menu bar or system tray, share the local screen or open the remote viewer over the local network.
-
-- **One app for both roles:** the Windows viewer opens on demand and can also share that computer's screen.
-- **Automatic reconnection** after temporary disconnects, with a notice when retries are exhausted.
-- **Video codecs:** AV1 and HEVC are preferred when supported by both devices, with compatible fallbacks.
-- Available for macOS Apple Silicon/Intel and Windows x64.
+On macOS, optionally use the Dock's **Scale** minimize effect while sharing. This may make the Genie minimize animation look smoother on the receiving computer; the original Dock effect is restored afterward. The **Smooth** quality profile also prioritizes maintaining frame rate when the encoder adapts.
 
 | File | Platform |
 | --- | --- |
-| `GDW-Mirror-0.2.3-arm64.zip` / `.dmg` | macOS Apple Silicon |
-| `GDW-Mirror-0.2.3-x64.zip` / `.dmg` | macOS Intel |
-| `GDW-Mirror-0.2.3-x64-portable.exe` | Windows x64 portable |
+| `GDW-Mirror-0.2.4-arm64.zip` / `.dmg` | macOS Apple Silicon |
+| `GDW-Mirror-0.2.4-x64.zip` / `.dmg` | macOS Intel |
+| `GDW-Mirror-0.2.4-x64-portable.exe` | Windows x64 portable |
 
 For the signed Windows version, install **[GDW Mirror View from Microsoft Store](https://apps.microsoft.com/detail/9n4wcwf6cr0b?cid=DevShareMCLPCS&hl=es-MX&gl=MX)**. The Store version is signed and updated by Microsoft. The portable `.exe` in this release is a separate, unsigned download.
 
