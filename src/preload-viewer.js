@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld('mirror', {
   hello: (host, port) => ipcRenderer.invoke('net:hello', { host, port }),
   answer: (host, port, code, sdp) => ipcRenderer.invoke('net:answer', { host, port, code, sdp }),
   bye: (host, port, code) => ipcRenderer.invoke('net:bye', { host, port, code }),
+  reportStats: (stats) => ipcRenderer.send('viewer:stats', stats),
+  reportConnectionState: (state) => ipcRenderer.send('viewer:connection-state', String(state)),
   setFullScreen: (on) => ipcRenderer.send('win:fullscreen', !!on),
   setAlwaysOnTop: (on) => ipcRenderer.send('win:ontop', !!on),
   minimize: () => ipcRenderer.send('win:minimize'),

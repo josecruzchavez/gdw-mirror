@@ -281,6 +281,7 @@ function reportHeight() {
 el('share').addEventListener('click', () => window.menu.action({ type: 'toggle-share' }));
 el('view').addEventListener('click', () => window.menu.action({ type: 'open-viewer' }));
 el('login').addEventListener('click', () => window.menu.action({ type: 'toggle-login' }));
+el('diagnostics').addEventListener('click', () => window.menu.action({ type: 'open-diagnostics' }));
 if (window.menu.platform === 'darwin') {
   el('perm').addEventListener('click', () => window.menu.action({ type: 'permissions' }));
 } else {

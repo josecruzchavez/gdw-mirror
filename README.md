@@ -153,9 +153,10 @@ portable, el `.exe` de Windows:
    no lo ignores: confirma que la descarga proviene del release oficial.
 
 4. La aplicación se inicia en la barra de estado, sin ventana principal. Abre el panel desde el icono para compartir esta pantalla o abrir el visor remoto.
-5. La primera vez que compartas pantalla, macOS pedirá **Grabación de pantalla**:
-   *Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla* → activa **GDW Mirror**.
-   El sistema pedirá **reiniciar la app**; ciérrala desde el panel (*Salir de GDW Mirror*) y vuelve a abrirla.
+5. Al iniciar la captura por primera vez, macOS solicitará el permiso de **Grabación de pantalla**.
+   Después, GDW Mirror aparecerá en *Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla*,
+   donde puedes activar o desactivar el permiso. Si macOS pide reiniciar la app, ciérrala desde el panel
+   (*Salir de GDW Mirror*) y vuelve a abrirla.
 
 #### Windows
 
@@ -375,6 +376,18 @@ GDW Mirror (Mac)                           GDW Mirror (Windows)
   con pausas de 1,5 segundos. Si no logra reconectar, muestra un aviso para volver a conectar manualmente.
 
 Nada sale a internet. No hay servidores intermedios. No hay telemetría.
+
+### Registros de diagnóstico
+
+GDW Mirror guarda métricas locales para ayudar a identificar problemas de captura, red o recepción.
+En el menú de la app elige **Abrir registros de diagnóstico…**; en el visor de Windows también puedes
+usar `Ctrl+Shift+L`. Se crean archivos `diagnostics-host.jsonl` y `diagnostics-viewer.jsonl` en esa carpeta;
+cuando el archivo activo alcanza 5 MB, se conserva una copia `.1`.
+
+Los registros incluyen FPS codificados/renderizados, bitrate, RTT, pérdida de paquetes, jitter,
+decodificación, códec y protocolo de transporte. No guardan imagen, audio, IP ni código de conexión.
+Para analizar una prueba, comparte ambos registros y anota si fue por Wi-Fi o cable, el perfil/resolución
+y el momento aproximado en que se notó la lentitud.
 
 ## Solución de problemas
 

@@ -152,9 +152,10 @@ version, the Windows `.exe`:
    confirm the download came from the official release.
 
 4. The app starts in the menu bar without a main window. Open the panel from its icon to share this screen or open the remote viewer.
-5. The first time you share, macOS will ask for **Screen Recording**:
-   *System Settings → Privacy & Security → Screen Recording* → enable **GDW Mirror**. The system will
-   ask to **restart the app**; quit it from the panel (*Quit GDW Mirror*) and reopen it.
+5. When you start capturing for the first time, macOS requests **Screen Recording** permission.
+   GDW Mirror then appears in *System Settings → Privacy & Security → Screen Recording*, where you
+   can enable or disable it. If macOS asks you to restart the app, quit it from the panel
+   (*Quit GDW Mirror*) and reopen it.
 
 #### Windows
 
@@ -372,6 +373,18 @@ GDW Mirror (Mac)                           GDW Mirror (Windows)
   with 1.5-second intervals. If it cannot reconnect, it shows a message so you can reconnect manually.
 
 Nothing leaves the internet. No intermediary servers. No telemetry.
+
+### Diagnostic logs
+
+GDW Mirror stores local metrics to help identify capture, network, or receiver issues. Choose
+**Open diagnostic logs…** from the app menu; in the Windows viewer, you can also press `Ctrl+Shift+L`.
+The folder contains `diagnostics-host.jsonl` and `diagnostics-viewer.jsonl`; when an active file
+reaches 5 MB, one `.1` backup is kept.
+
+Logs include encoded/rendered FPS, bitrate, RTT, packet loss, jitter, decoding, codec, and transport
+protocol. They do not contain screen/audio content, IP addresses, or connection codes. To analyze a
+test, share both logs and note whether it used Wi-Fi or Ethernet, the profile/resolution, and the
+approximate time the slowdown occurred.
 
 ## Troubleshooting
 

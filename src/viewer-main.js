@@ -7,6 +7,7 @@ const path = require('path');
 
 const { postJson, getJson } = require('./net');
 const { fitBounds } = require('./fit');
+const { diagnosticsDirectory, writeDiagnosticLog } = require('./diagnostics');
 
 const DISC_PORT = Number(process.env.MIRROR_DISC_PORT || 47821);
 const DEV = process.argv.includes('--dev');
@@ -183,6 +184,16 @@ function buildAppMenu() {
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
+        { type: 'separator' },
+        {
+          label: 'Abrir registros de diagnóstico…',
+          accelerator: 'CommandOrControl+Shift+L',
+          click: () => {
+            shell.openPath(diagnosticsDirectory()).then((error) => {
+              if (error) dialog.showErrorBox('No se pudieron abrir los registros', error);
+            });
+          },
+        },
       ],
     },
   ];
@@ -193,6 +204,10 @@ function viewerStart() {
   process.env.MIRROR_LOCAL_NAME = localName;
   app.setName('GDW Mirror');
   app.whenReady().then(() => {
+    writeDiagnosticLog('viewer', 'session-start', {
+      platform: process.platform,
+      architecture: process.arch,
+    });
     buildAppMenu();
     createWindow();
 
@@ -217,6 +232,32 @@ function viewerStart() {
       } catch (e) {
         return { ok: false, error: e.message };
       }
+    });
+
+    ipcMain.on('viewer:stats', (_e, stats) => {
+      if (!stats || typeof stats !== 'object') return;
+      writeDiagnosticLog('viewer', 'receiver-stats', {
+        renderedFps: stats.renderedFps,
+        receivedFps: stats.receivedFps,
+        bitrateKbps: stats.bitrateKbps,
+        rttMs: stats.rttMs,
+        packetsReceived: stats.packetsReceived,
+        packetsLost: stats.packetsLost,
+        framesReceived: stats.framesReceived,
+        framesDecoded: stats.framesDecoded,
+        framesDropped: stats.framesDropped,
+        jitterMs: stats.jitterMs,
+        jitterBufferMs: stats.jitterBufferMs,
+        decodeMsPerFrame: stats.decodeMsPerFrame,
+        codec: stats.codec,
+        transportProtocol: stats.transportProtocol,
+        width: stats.width,
+        height: stats.height,
+      });
+    });
+
+    ipcMain.on('viewer:connection-state', (_e, state) => {
+      writeDiagnosticLog('viewer', 'connection-state', { state });
     });
 
     ipcMain.on('win:fullscreen', (_e, on) => {

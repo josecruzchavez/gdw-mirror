@@ -2,7 +2,7 @@
 
 const {
   app, BrowserWindow, Tray, Menu, ipcMain, desktopCapturer, screen, session,
-  systemPreferences, dialog, shell, powerSaveBlocker, clipboard,
+  dialog, shell, powerSaveBlocker, clipboard,
 } = require('electron');
 const http = require('http');
 const { spawn } = require('child_process');
@@ -13,6 +13,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 
 const icons = require('./icons');
+const { diagnosticsDirectory, writeDiagnosticLog } = require('./diagnostics');
 const { localIPv4 } = require('./net');
 
 const HTTP_PORT = Number(process.env.MIRROR_HTTP_PORT || 47820);
@@ -396,6 +397,14 @@ function buildMenuTemplate() {
     checked: loginItemEnabled(),
     click: (item) => setLoginItem(item.checked),
   });
+  template.push({
+  label: 'Abrir registros de diagnóstico…',
+  click: () => {
+    shell.openPath(diagnosticsDirectory()).then((error) => {
+      if (error) dialog.showErrorBox('No se pudieron abrir los registros', error);
+    });
+  },
+  });
   if (process.platform === 'darwin') {
     template.push({ type: 'separator' });
     template.push({
@@ -488,40 +497,6 @@ function ensureEngine() {
 async function startSharing() {
   if (st.sharing || st.starting) return;
 
-  if (process.platform === 'darwin') {
-    let status = systemPreferences.getMediaAccessStatus('screen');
-    if (status !== 'granted') {
-      // Pide el permiso con la API nativa. Esto dispara el prompt del sistema y
-      // hace que la app aparezca en Ajustes → Grabación de pantalla, en vez de
-      // obligar a agregarla a mano.
-      let asked = false;
-      try {
-        asked = await systemPreferences.askForMediaAccess('screen');
-      } catch (e) {
-        asked = false;
-      }
-      status = systemPreferences.getMediaAccessStatus('screen');
-      if (!asked && status !== 'granted') {
-        st.error = 'Falta el permiso de grabación de pantalla.';
-        rebuildMenu();
-        dialog
-          .showMessageBox({
-            type: 'warning',
-            buttons: ['Abrir Ajustes', 'Cancelar'],
-            defaultId: 0,
-            message: 'GDW Mirror necesita permiso para grabar la pantalla',
-            detail:
-              'Actívalo en Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla y vuelve a intentarlo. Puede que tengas que reiniciar la app después de concederlo.',
-          })
-          .then((r) => {
-            if (r.response === 0)
-              shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture');
-          });
-        return;
-      }
-    }
-  }
-
   st.starting = true;
   st.error = null;
   st.stats = null;
@@ -563,6 +538,13 @@ async function startSharing() {
       scaleMode: st.scaleMode,
       capture,
     });
+    writeDiagnosticLog('host', 'capture-start', {
+      profile: st.profile,
+      scaleMode: st.scaleMode,
+      width: capture && capture.width,
+      height: capture && capture.height,
+      targetFps: PROFILES[st.profile].fps,
+    });
   } catch (err) {
     await restoreDockEffect();
     st.starting = false;
@@ -575,6 +557,7 @@ async function startSharing() {
 
 async function stopSharing(options) {
   const silent = options && options.silent;
+  writeDiagnosticLog('host', 'capture-stop', { silent: !!silent });
   if (engine && !engine.isDestroyed()) engine.webContents.send('engine:stop');
   st.sharing = false;
   st.starting = false;
@@ -874,7 +857,17 @@ function wireIpc() {
 
   ipcMain.on('engine:stats', (_e, payload) => {
     st.stats = payload;
-    if (process.env.MIRROR_LOG_STATS) console.log('[stats]', JSON.stringify(payload));
+    writeDiagnosticLog('host', 'sender-stats', {
+      fps: payload.fps,
+      kbps: payload.kbps,
+      rttMs: payload.rtt,
+      qualityLimitationReason: payload.quality,
+      width: payload.width,
+      height: payload.height,
+      framesEncoded: payload.framesEncoded,
+      bytesSent: payload.bytesSent,
+      codec: payload.codec,
+    });
     scheduleMenuRefresh();
     pushPanelState();
   });
@@ -882,6 +875,7 @@ function wireIpc() {
   ipcMain.on('engine:state', (_e, connectionState) => {
     const connected = connectionState === 'connected';
     if (connected !== st.peerConnected) {
+      writeDiagnosticLog('host', 'connection-state', { state: connectionState });
       st.peerConnected = connected;
       rebuildMenu();
       pushPanelState();
@@ -889,6 +883,7 @@ function wireIpc() {
   });
 
   ipcMain.on('engine:error', (_e, message) => {
+    writeDiagnosticLog('host', 'sender-error', { message: String(message) });
     st.error = message;
     st.sharing = false;
     st.starting = false;
@@ -991,6 +986,12 @@ function wireIpc() {
         hideMenu();
         shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture');
         break;
+      case 'open-diagnostics':
+        hideMenu();
+        shell.openPath(diagnosticsDirectory()).then((error) => {
+          if (error) dialog.showErrorBox('No se pudieron abrir los registros', error);
+        });
+        break;
       case 'quit':
         hideMenu();
         app.isQuitting = true;
@@ -1014,6 +1015,11 @@ function hostStart() {
   if (process.platform === 'darwin' && app.dock) app.dock.hide();
 
   app.whenReady().then(async () => {
+    writeDiagnosticLog('host', 'session-start', {
+      version: VERSION,
+      platform: process.platform,
+      architecture: process.arch,
+    });
     await recoverDockEffect();
 
     session.defaultSession.setDisplayMediaRequestHandler(

@@ -189,6 +189,7 @@ function startStats() {
       height: out.frameHeight || null,
       bytesSent: out.bytesSent || 0,
       framesEncoded: out.framesEncoded || 0,
+      codec: codec && codec.mimeType ? codec.mimeType : null,
     });
   }, 1000);
 }

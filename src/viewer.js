@@ -150,6 +150,37 @@ function startStats() {
     const rtt =
       pair && typeof pair.currentRoundTripTime === 'number' ? `${Math.round(pair.currentRoundTripTime * 1000)} ms` : '—';
     el('rtt').textContent = rtt;
+
+    const localCandidate = pair && report.get(pair.localCandidateId);
+    const remoteCandidate = pair && report.get(pair.remoteCandidateId);
+    const codec = inbound.codecId && report.get(inbound.codecId);
+    const jitterBufferMs =
+      inbound.jitterBufferEmittedCount > 0
+        ? (inbound.jitterBufferDelay / inbound.jitterBufferEmittedCount) * 1000
+        : null;
+    const decodeMsPerFrame =
+      inbound.framesDecoded > 0 ? (inbound.totalDecodeTime / inbound.framesDecoded) * 1000 : null;
+    window.mirror.reportStats({
+      renderedFps: currentFps,
+      receivedFps: inbound.framesPerSecond || null,
+      bitrateKbps: kbps,
+      rttMs: pair && typeof pair.currentRoundTripTime === 'number' ? pair.currentRoundTripTime * 1000 : null,
+      packetsReceived: inbound.packetsReceived,
+      packetsLost: inbound.packetsLost,
+      framesReceived: inbound.framesReceived,
+      framesDecoded: inbound.framesDecoded,
+      framesDropped: inbound.framesDropped,
+      jitterMs: typeof inbound.jitter === 'number' ? inbound.jitter * 1000 : null,
+      jitterBufferMs,
+      decodeMsPerFrame,
+      codec: codec && codec.mimeType,
+      transportProtocol:
+        localCandidate && remoteCandidate
+          ? `${localCandidate.protocol || 'unknown'}/${remoteCandidate.protocol || 'unknown'}`
+          : null,
+      width,
+      height,
+    });
   }, 1000);
 }
 
@@ -207,6 +238,7 @@ async function connect(nextTarget, options) {
   connection.onconnectionstatechange = () => {
     if (pc !== connection || attempt !== connectionAttempt) return;
     const state = connection.connectionState;
+    window.mirror.reportConnectionState(state);
     if (state === 'connected') {
       clearTimeout(disconnectTimer);
       disconnectTimer = null;
