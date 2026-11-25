@@ -381,8 +381,9 @@ GDW Mirror stores local metrics to help identify capture, network, or receiver i
 The folder contains `diagnostics-host.jsonl` and `diagnostics-viewer.jsonl`; when an active file
 reaches 5 MB, one `.1` backup is kept.
 
-Logs include encoded/rendered FPS, bitrate, RTT, packet loss, jitter, decoding, codec, and transport
-protocol. They do not contain screen/audio content, IP addresses, or connection codes. To analyze a
+Logs include encoded/rendered FPS, bitrate, RTT, packet loss, jitter, decoding, codec, transport
+protocol, and the selected ICE pair's network type (Ethernet, Wi-Fi, or other, when Chromium provides
+it). They do not contain screen/audio content, IP addresses, or connection codes. To analyze a
 test, share both logs and note whether it used Wi-Fi or Ethernet, the profile/resolution, and the
 approximate time the slowdown occurred.
 

@@ -385,7 +385,8 @@ usar `Ctrl+Shift+L`. Se crean archivos `diagnostics-host.jsonl` y `diagnostics-v
 cuando el archivo activo alcanza 5 MB, se conserva una copia `.1`.
 
 Los registros incluyen FPS codificados/renderizados, bitrate, RTT, pérdida de paquetes, jitter,
-decodificación, códec y protocolo de transporte. No guardan imagen, audio, IP ni código de conexión.
+decodificación, códec, protocolo de transporte y tipo de red del par ICE seleccionado (Ethernet, Wi-Fi u
+otro, cuando Chromium lo proporciona). No guardan imagen, audio, IP ni código de conexión.
 Para analizar una prueba, comparte ambos registros y anota si fue por Wi-Fi o cable, el perfil/resolución
 y el momento aproximado en que se notó la lentitud.
 

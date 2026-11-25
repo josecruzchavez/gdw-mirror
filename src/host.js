@@ -157,6 +157,8 @@ function startStats() {
       if (r.type === 'candidate-pair' && (r.nominated || r.state === 'succeeded') && r.bytesSent) pair = r;
     });
     if (!out) return;
+    const localCandidate = pair && report.get(pair.localCandidateId);
+    const remoteCandidate = pair && report.get(pair.remoteCandidateId);
     const codec = out.codecId && report.get(out.codecId);
     if (codec && codec.mimeType) {
       const name = codec.mimeType.replace(/^video\//i, '').toUpperCase();
@@ -190,6 +192,8 @@ function startStats() {
       bytesSent: out.bytesSent || 0,
       framesEncoded: out.framesEncoded || 0,
       codec: codec && codec.mimeType ? codec.mimeType : null,
+      localNetworkType: localCandidate && localCandidate.networkType ? localCandidate.networkType : null,
+      remoteNetworkType: remoteCandidate && remoteCandidate.networkType ? remoteCandidate.networkType : null,
     });
   }, 1000);
 }

@@ -251,6 +251,8 @@ function viewerStart() {
         decodeMsPerFrame: stats.decodeMsPerFrame,
         codec: stats.codec,
         transportProtocol: stats.transportProtocol,
+        localNetworkType: stats.localNetworkType,
+        remoteNetworkType: stats.remoteNetworkType,
         width: stats.width,
         height: stats.height,
       });

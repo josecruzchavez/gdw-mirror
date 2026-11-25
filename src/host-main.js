@@ -867,6 +867,8 @@ function wireIpc() {
       framesEncoded: payload.framesEncoded,
       bytesSent: payload.bytesSent,
       codec: payload.codec,
+      localNetworkType: payload.localNetworkType,
+      remoteNetworkType: payload.remoteNetworkType,
     });
     scheduleMenuRefresh();
     pushPanelState();

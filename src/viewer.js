@@ -178,6 +178,8 @@ function startStats() {
         localCandidate && remoteCandidate
           ? `${localCandidate.protocol || 'unknown'}/${remoteCandidate.protocol || 'unknown'}`
           : null,
+      localNetworkType: localCandidate && localCandidate.networkType ? localCandidate.networkType : null,
+      remoteNetworkType: remoteCandidate && remoteCandidate.networkType ? remoteCandidate.networkType : null,
       width,
       height,
     });
